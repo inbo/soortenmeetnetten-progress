@@ -15,18 +15,6 @@ Jaarlijks gebeurt er na het veldseizoen voor alle meetnetten een grondige evalua
 
 Jaarlijks worden er per meetnet doelen opgesteld. Voor het meerendeel van de meetnetten drukken we deze doelen uit in het aantal getelde meetnetlocaties conform het monitoringsprotocol. Een meetnetlocatie is geteld conform het monitoringsprotocol als de telmethode correct werd gevolgd bij geschikte weersomstandigheden en als er voldoende tellingen werden uitgevoerd binnen de geschikte telperiode.
 
-```{r}
-voortgang_meetnetten_sg %>%
-  filter(is_sample == 1) %>%
-  filter(meetnet_type == "meetnet") %>%
-  filter(soortgroep != "Vaatplanten") %>%
-  ggplot(aes(x = factor(jaar), y = aantal_voldoende_geteld, group = soortgroep, colour = soortgroep)) +
-  geom_point() +
-  geom_line()
-  
-
-```
-    
 
 ```{r, fig.height= 7, fig.width= 6.5}
 library(plotly)
@@ -66,7 +54,7 @@ voortgang_meetnetten %>%
 
 ```{r, warnings = FALSE}
 
-bezochte_locaties <- overzicht_locaties %>%
+bezochte_locaties <- evaluatie_locaties %>%
   filter(locatie_bezocht == 1) %>%
   filter(soortgroep != "vogels")
 
@@ -82,8 +70,6 @@ bezochte_locaties_sf <- locaties %>%
 
 
 ```{r}
-library(crosstalk)
-library(leaflet)
 
 locaties_shared <- SharedData$new(bezochte_locaties_sf)
 
@@ -103,8 +89,6 @@ bscols(
 
 
 ```{r}
-library(crosstalk)
-library(leaflet)
 
 locaties_shared <- SharedData$new(bezochte_locaties_sf)
 
@@ -119,7 +103,10 @@ bscols(
       addTiles() %>%
       addCircleMarkers(radius = 0.5, opacity = 0.6, label = ~meetnet),
     plot_ly(locaties_shared, x = ~jaar, color = ~soortgroep) %>% 
-        add_histogram())
+      add_histogram() %>%
+      layout(legend = list(x = 100, y = 0.5))
+      ) 
+      
   )
 )
 
