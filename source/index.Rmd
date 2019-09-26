@@ -1,13 +1,13 @@
 ---
-title: "Titel van het rapport"
+title: "Voortgangsrapport soortenmeetnetten"
 author: 
   - 
-    name: "Voornaam1 Achternaam1"
-    email: "voornaam1.achternaam1@inbo.be"
+    name: "Toon Westra"
+    email: "Toon.Westra@inbo.be"
   - 
     name: "Voornaam2 Achternaam2"
     email: "voornaam2.achternaam2@inbo.be"
-subtitle: "Hier komt de optionele ondertitel"
+subtitle: "Een stand van zaken na drie jaar monitoring"
 reportnr: "Hier komt de DOI van het rapport"
 ordernr: "Het optionele nummer van de opdrachtgever"
 link-citations: TRUE
@@ -23,10 +23,6 @@ output:
     template: !expr INBOmd::inbo_rapport_css("epub")
 ---
 
-
-# INBO rapport met RMarkdown met Bookdown extensie
-
-Een concreet voorbeeld van de broncode van dergelijk rapport vind je op https://github.com/inbo/inbomd_examples onder het mapje source/inbo_rapport. Hoe zo een rapport er finaal uit kan zien, vind je op https://inbomd-examples.netlify.com/
 
 ```{r setup, include = FALSE}
 library(knitr)
@@ -59,3 +55,10 @@ if (!interactive() && opts_knit$get("rmarkdown.pandoc.to") != "html") {
   )
 }
 ```
+
+
+```{r}
+
+library(sf)
+```
+
