@@ -1,0 +1,293 @@
+
+```{r data import}
+
+versie <- "versie2019-09-03"
+
+bezoeken <- read.csv2(paste("../data/", versie, "/bezoeken.csv", sep = ""), stringsAsFactors = FALSE)
+
+aantallen <- read.csv2(paste("../data/", versie, "/aantallen.csv", sep = ""), stringsAsFactors = FALSE)
+
+werkpakketten <- read.csv2(paste("../data/", versie, "/werkpakketten.csv", sep = ""), stringsAsFactors = FALSE)
+
+locaties <- st_read(paste("../data/", versie, "/meetnetten_locaties.gpkg", sep = ""),
+                    "locaties", quiet = TRUE)
+
+locaties_metadata <- locaties %>%
+  st_drop_geometry() %>%
+  filter(locatie_type == "locatie") %>%
+  distinct(meetnet, locatie, is_active, is_sample)
+
+meetnetten_metadata <- locaties %>%
+  st_drop_geometry() %>%
+  filter(locatie_type == "locatie") %>%
+  group_by(meetnet, meetnet_type) %>%
+  summarise(n_locaties_meetnet = sum(is_sample)) %>%
+  ungroup()
+
+bezoeken <- bezoeken %>%
+  filter(meetnet != "Algemene vlindermonitoring") %>%
+  filter(meetnet != "Algemene Broedvogelmonitoring (ABV)") %>%
+  mutate(datum = as.Date(start_date, format = "%Y-%m-%d"),
+         jaar = as.numeric(format(datum, "%Y")),
+         doy = as.numeric(format(datum, "%j")),
+         taak = ifelse(is.na(taak), "Extra telling", taak),
+         protocol = ifelse(protocol == "Amfibieën - Larven", "Amfibieën - Larven en metamorfen", protocol),
+         protocol = ifelse(protocol == "Amfibieën - Fuiken (v1)", "Amfibieën - Fuiken", protocol),
+         protocol = ifelse(protocol == "vuursalamander transecten (v1)", "Vuursalamander - Transecten", protocol),
+         protocol = ifelse(protocol == "Vuursalamander - Transecten (v1)", "Vuursalamander - Transecten", protocol),
+         protocol = ifelse(protocol == "Vlinders - Gebiedstelling (v1)", "Vlinders - Gebiedstelling", protocol),
+         protocol = ifelse(meetnet == "Rugstreeppad", "Rugstreeppad - Roepkoren of zichtwaarneming", protocol),
+         bezoek_status = ifelse(bezoek_status == "Conform protocol", "telling_cp",
+                         ifelse(bezoek_status %in% c("Geen veldwerk mogelijk - locatie ontoegankelijk", "Geen veldwerk mogelijk - locatie ongeschikt"), "telling_gvm", 
+                         ifelse(bezoek_status %in% c("Weersomstandigheden ongunstig", "Telmethode niet gevolgd"), "telling_nvcp",NA)))) %>%
+  filter(jaar >= 2016) %>%
+  group_by(meetnet, protocol, locatie, jaar) %>%
+  mutate(i_bezoek = rank(doy)) %>%
+  ungroup() %>%
+  select(soortgroep, meetnet, protocol, locatie, jaar, datum, doy, i_bezoek, everything())
+
+soortgroepen <- bezoeken %>%
+  distinct(soortgroep, meetnet)
+
+aantallen <- aantallen %>%
+  mutate(datum = as.Date(start_date, format = "%Y-%m-%d"),
+         jaar = as.numeric(format(datum, "%Y")),
+         doy = as.numeric(format(datum, "%j"))) %>%
+  select(soortgroep, meetnet, protocol, locatie, jaar, datum, doy, everything()) %>%
+  filter(meetnet != "")
+
+werkpakketten <- werkpakketten %>%
+  mutate(wp_start = as.Date(wp_start, format = "%Y-%m-%d"),
+         wp_end = as.Date(wp_end,  format = "%Y-%m-%d"),
+         doy_min = as.numeric(format(wp_start, "%j")),
+         doy_max = as.numeric(format(wp_end, "%j")),
+         doy_mid = doy_min + round((doy_max - doy_min)/2, 0))
+
+
+
+# data die niet in meetnetten.be zit
+
+data_das <- read.csv2("../data/das/meetnet_das_2016_2018.csv")
+
+# jaardoelen
+
+jaardoelen <- read.csv2("../Data/jaardoelen_2018.Csv", stringsAsFactors = FALSE) %>%
+  mutate(Jaardoel = ifelse(meetnet == "Rivierrombout" & jaar == 2016, 10, Jaardoel),
+         Eenheid = ifelse(meetnet == "Rivierrombout" & jaar == 2016, "Locaties", as.character(Eenheid))) # jaardoel conform andere jaren om vergelijking mogelijk te maken
+
+# taken niet uitvoerbaar: een aantal taken waren niet uitvoorbaar door overmacht
+
+taken_nu <- read.csv2(paste("../Data/TakenNietUitvoerbaar_2016_2017.csv",sep=""),
+                     stringsAsFactors = FALSE) %>%
+  rename(aantal_taken_nu = AantalTaken_NU) %>%
+  left_join(soortgroepen, by = "meetnet")
+
+meetnetKarakt <- read.csv2("../Data/meetnetkarakt_2018.csv", stringsAsFactors = FALSE)
+
+meetnetKarakt_overzicht <- meetnetKarakt %>%
+  group_by(Meetnet, Meetcyclus, Protocol, Opstartjaar) %>%
+  summarise(AantalBezoekenDoel = sum(Bezoeken)) %>%
+  rename(meetnet = Meetnet, protocol = Protocol) %>%
+  ungroup() %>%
+  mutate(AantalBezoekenDoel = ifelse(meetnet == "Argusvlinder", 5, AantalBezoekenDoel),
+         AantalBezoekenDoel = ifelse(meetnet == "Rugstreeppad", 1, AantalBezoekenDoel))
+
+```
+
+```{r overzichtTellingens, message= FALSE, warning= FALSE}
+
+# overzicht uitgevoerde bezoeken
+overzicht_taken_uitgevoerd <- bezoeken %>%
+  group_by(soortgroep,  meetnet, protocol, jaar, locatie, taak, bezoek_status) %>%
+  summarise(aantal_tellingen = n()) %>%
+  ungroup() %>%
+  mutate(telling_ingevoerd = 1) %>%
+  left_join(locaties_metadata, by = c("meetnet", "locatie"))
+
+overzicht_taken_uitgevoerd_wide <- overzicht_taken_uitgevoerd %>%
+  spread(key = bezoek_status, value = aantal_tellingen, fill = 0) %>%
+  select(soortgroep, meetnet, protocol, jaar, locatie, is_sample, is_active, taak, telling_ingevoerd, telling_cp, telling_gvm, telling_nvcp)
+
+overzicht_locaties <- overzicht_taken_uitgevoerd_wide %>%
+  group_by(soortgroep, meetnet, protocol, jaar, locatie, is_sample, is_active) %>%
+  summarise(aantal_taken_cp = sum((telling_cp > 0) * (taak != "Extra telling")),
+            aantal_tellingen_cp = sum(telling_cp),
+            aantal_tellingen_gvm = sum(telling_gvm),
+            aantal_tellingen_nvcp = sum(telling_nvcp)) %>%
+  ungroup() %>%
+  full_join(taken_nu, by = c("soortgroep", "meetnet", "protocol","locatie", "jaar")) %>%
+  mutate(aantal_taken_nu = ifelse(is.na(aantal_taken_nu ),0, aantal_taken_nu)) %>%
+  mutate(aantal_taken_nu = ifelse(jaar == 2018, aantal_tellingen_gvm, aantal_taken_nu)) %>%
+  full_join(meetnetKarakt_overzicht, by = c("meetnet","protocol")) #voor 2018 rekenen we het aantal tellingen 'geen veldwerk mogelijk' mee
+
+overzicht_locaties[is.na(overzicht_locaties)] <- 0
+
+# strikte evaluatie: aantal taken conform aantal bezoeken
+#minder strikte evaluatie: aantal tellingenCP conform aantal bezoeken
+
+evaluatie_locaties <- overzicht_locaties %>%
+  mutate(voldoende_geteld_strikt = ifelse((aantal_taken_cp + aantal_taken_nu) >= AantalBezoekenDoel, 1, 0),
+        voldoende_data_strikt = ifelse(aantal_taken_cp >= AantalBezoekenDoel, 1, 0),
+        voldoende_geteld = ifelse((aantal_tellingen_cp +   aantal_taken_nu) >= AantalBezoekenDoel, 1, 0),
+        voldoende_data = ifelse((aantal_tellingen_cp) >= AantalBezoekenDoel, 1, 0))
+
+# voor meetnetten met een cyclus langer dan 1 jaar, wordt ook het aantal voldoende getelde locaties binnen de meetcyclus geteld
+evaluatie_locaties <- evaluatie_locaties %>%
+  group_by(soortgroep, meetnet, protocol, locatie) %>%
+  mutate(temp1 = rank(desc(voldoende_geteld)) *10  + rank(jaar),
+         temp2 = rank(desc(voldoende_data)) *10  + rank(jaar),
+        voldoende_geteld_nieuw = ifelse((rank(temp1) == 1) & (voldoende_geteld == 1), 1, 0),
+        voldoende_data_nieuw = ifelse((rank(temp2) == 1) & (voldoende_data == 1), 1, 0),
+        voldoende_geteld_nieuw = ifelse(Meetcyclus > 1, voldoende_geteld_nieuw, NA),
+        voldoende_data_nieuw = ifelse(Meetcyclus > 1, voldoende_data_nieuw, NA)) %>%
+  ungroup() %>%
+ arrange(desc(is_sample), soortgroep, meetnet, protocol, locatie)
+
+evaluatie_locaties$locatie_bezocht <- ifelse((evaluatie_locaties$aantal_tellingen_cp +  evaluatie_locaties$aantal_taken_nu) > 0, 1, 0)
+
+#overzicht per meetnet
+overzicht_meetnetten <- evaluatie_locaties %>%
+  filter(jaar < 2019) %>%
+  filter(soortgroep != "0") %>%
+  group_by(is_sample, soortgroep, meetnet, protocol, jaar, Meetcyclus) %>%
+  summarise(aantal_tellingen_cp = sum(aantal_tellingen_cp),
+            aantal_taken_nu = sum(aantal_taken_nu),
+            aantal_locatie_geteld = sum(locatie_bezocht),
+            aantal_voldoende_geteld = sum(voldoende_geteld,na.rm =TRUE),
+            aantal_voldoende_data = sum(voldoende_data),
+            aantal_voldoende_geteld_nieuw = sum(voldoende_geteld_nieuw),
+            aantal_voldoende_data_nieuw = sum(voldoende_data_nieuw)) %>%
+  group_by(soortgroep, meetnet, protocol, Meetcyclus, is_sample) %>%
+  mutate(aantal_voldoende_geteld_cyclus = cumsum(aantal_voldoende_geteld_nieuw),
+         aantal_voldoende_data_cyclus = cumsum(aantal_voldoende_data_nieuw)) %>%
+  ungroup() %>%
+  left_join(jaardoelen, by = c("meetnet", "jaar"))
+
+
+
+```
+
+```{r meetnetDas, message= FALSE, warning= FALSE}
+
+burchten_das <- data_das %>%
+  rename(jaar = Jaar, gebied = Gebied) %>%
+  group_by(jaar, gebied, burchtID) %>%
+  summarise(aantal_tellingen_cp = n()) %>%
+  ungroup() %>%
+  mutate(soortgroep = "zoogdieren",
+         meetnet = "Das",
+         protocol = "Inhaalslag",
+         voldoende_geteld = 1) %>%
+  group_by(gebied, burchtID) %>%
+  mutate(voldoende_geteld_cyclus = 1,
+         voldoende_geteld_nieuw = ifelse(rank(jaar) == 1, 1, 0)) %>%
+  ungroup()
+
+overzicht_meetnet_das <- burchten_das %>%
+  group_by(soortgroep, meetnet, protocol, jaar, gebied) %>%
+  summarise(aantal_voldoende_geteld = sum(voldoende_geteld),
+            aantal_voldoende_geteld_nieuw = sum(voldoende_geteld_nieuw),
+            aantal_tellingen_cp = sum(aantal_tellingen_cp)) %>%
+  ungroup() %>%
+  group_by(soortgroep, meetnet, protocol, gebied) %>%
+  mutate(aantal_voldoende_geteld_cyclus = sum(aantal_voldoende_geteld_nieuw)) %>%
+  ungroup() %>%
+  mutate(is_sample = 1,
+        Cyclusdoel = ifelse(gebied == "Haspengouw", 360, 102),
+        Meetcyclus = 3) %>%
+  arrange(gebied)
+ 
+```
+
+```{r samenvoegen, message=FALSE, warning=FALSE}
+data_extra <- read.csv2("../Data/OverzichtSoortenBuitenMN_versie20190109.csv") %>%
+  rename(is_sample = Steekproeflocatie, aantal_tellingen_cp = AantalTellingenCP,
+         aantal_taken_nu = AantalTakenNU,
+         aantal_voldoende_geteld = AantalVoldoendeGeteld) %>%
+  mutate(Jaardoel = ifelse(meetnet == "Hamster", 1, Jaardoel),
+         Eenheid = ifelse(meetnet == "Hamster", "Locaties", as.character(Eenheid)))
+
+overzicht_meetnetten_all <- overzicht_meetnetten %>%
+  filter(soortgroep != "planten") %>%
+  filter(!meetnet %in% (filter(data_extra, is_sample == 1 & jaar == 2018))$meetnet) %>%
+  bind_rows(data_extra, overzicht_meetnet_das) %>%
+  arrange(soortgroep, protocol, meetnet) %>%
+  left_join(meetnetten_metadata, by = c("meetnet")) %>%
+  mutate(meetnet_type = ifelse(soortgroep == "mollusken" | meetnet == "Das", "inhaalslag", as.character(meetnet_type)))
+
+```
+
+```{r plantenmeetnetten}
+
+overzicht_planten <- read.csv2("../data/planten/Overzicht_meetnettenPlantenTotaal_versie2019-01-16.csv")
+
+overzicht_planten2 <- overzicht_planten %>%
+  mutate(is_sample = ifelse(type == "inMeetnet", 1, 0),
+         soortgroep = "Vaatplanten",
+         protocol = "Vaatplanten",
+         meetnet_type = "meetnet",
+         Meetcyclus = 3,
+         MeetfrequentieDoel = 1,
+         Cyclusdoel = ifelse(type == "inMeetnet", AantalLocatiesTotaal, NA),
+         Jaardoel = Cyclusdoel/5,
+         Eenheid = "Nieuwe locaties",
+         n_locaties_meetnet = ifelse(type == "nieuweLocatie", AantalVoldoendeGeteldCyclus, AantalLocatiesTotaal)) %>%
+  filter(type != "geschrapt") %>%
+  rename(aantal_tellingen_cp = AantalTellingenCP,
+         aantal_voldoende_geteld = AantalVoldoendeGeteld,
+         aantal_voldoende_geteld_nieuw = AantalVoldoendeGeteldNieuw,
+         aantal_voldoende_geteld_cyclus = AantalVoldoendeGeteldCyclus)
+
+tabel_stuurgroep <- overzicht_meetnetten_all %>%
+  filter(soortgroep != "planten") %>%
+  filter(meetnet != "Zeggekorfslak") %>%
+  bind_rows(overzicht_planten2) %>%
+  mutate(aantal_eenheid_doel = ifelse(Eenheid == "Locaties" & is_sample == 1, aantal_voldoende_geteld,
+         ifelse(Eenheid == "Nieuwe locaties" & is_sample == 1, aantal_voldoende_geteld_nieuw,
+                ifelse(Eenheid == "Bezoeken" & is_sample == 1, aantal_tellingen_cp, 
+                       ifelse(Eenheid == "Hectare" & is_sample == 1, OppervlakteGeteld, NA)))),
+    doelbereik_jaar = aantal_eenheid_doel/Jaardoel * 100,
+         doelbereik_cyclus = ifelse(!is.na(Cyclusdoel) & is_sample == 1, aantal_voldoende_geteld_cyclus/Cyclusdoel * 100, NA),
+         doelbereik_jaar_m = pmin(100, doelbereik_jaar),
+         doelbereik_cyclus_m = pmin(100, doelbereik_cyclus)) 
+
+```
+
+```{r}
+voortgang_meetnetten_sg <- tabel_stuurgroep %>%
+  filter(meetnet_type == "meetnet") %>%
+  group_by(is_sample, meetnet_type, soortgroep, jaar) %>%
+  summarise(aantal_tellingen_cp = sum(aantal_tellingen_cp),
+            aantal_voldoende_geteld = sum(aantal_voldoende_geteld),
+            totaal_doel = sum(Jaardoel),
+            totaal_gehaald = sum(doelbereik_jaar_m/ 100 * Jaardoel),
+            totaal_gehaald_procent = sum(doelbereik_jaar_m/ 100 * Jaardoel)/sum(Jaardoel) *100,
+            n_meetnet = n_distinct(meetnet),
+            meetnetten = str_c(unique(meetnet), collapse = ", ")) %>%
+  ungroup()
+
+voortgang_meetnetten <- tabel_stuurgroep %>%
+  group_by(is_sample, meetnet_type, soortgroep, jaar, meetnet, protocol) %>%
+  summarise(aantal_tellingen_cp = sum(aantal_tellingen_cp),
+            aantal_voldoende_geteld = sum(aantal_voldoende_geteld),
+            totaal_doel = sum(Jaardoel),
+            aantal_eenheid_doel = sum(aantal_eenheid_doel),
+            totaal_gehaald = sum(doelbereik_jaar_m/ 100 * Jaardoel),
+            totaal_gehaald_procent = sum(doelbereik_jaar_m/ 100 * Jaardoel)/sum(Jaardoel) *100,
+            n_meetnet = n_distinct(meetnet)) %>%
+  ungroup() %>%
+  mutate(totaal_gehaald_categorie = ifelse(totaal_gehaald_procent == 100, "100%",
+                                          ifelse(totaal_gehaald_procent >= 90, "90 - 99 %",
+                                                 ifelse(totaal_gehaald_procent >= 70, "70 - 89 %",
+                                                        ifelse(totaal_gehaald_procent >= 50, "50 - 69 %", "0 - 49 %")))),
+         totaal_gehaald_categorie = factor(totaal_gehaald_categorie,
+                                           levels = c("0 - 49 %", "50 - 69 %", "70 - 89 %",
+                                                      "90 - 99 %", "100%"))) %>%
+  arrange( soortgroep, jaar, meetnet) %>%
+  mutate(meetnet_tekst = ifelse(meetnet %in% c("Boomkikker", "Kamsalamander"),
+                                str_c(meetnet, ifelse(protocol %in% c("Padden en kikkers - Roepkoren", "Amfibieën - Fuiken"), " adulten", " larven")), 
+                                meetnet))
+  
+```
+
+
