@@ -3,19 +3,10 @@
 
 #Bijlage: overzicht soorten {#h:bijlage}
 
-```{r, warning=FALSE, message=FALSE}
-
-#gs_ls() 
-
-gs_soorten <- gs_url("https://docs.google.com/spreadsheets/d/1wwOkTnn9U55bBfEU_Jzp-NJCTJJYurRkFEVL3OhUB58", verbose = FALSE)
-
-soorten <- gs_read(gs_soorten, verbose = FALSE)
-
-```
 
 ```{r}
 
-soorten %>%
+soortenlijst %>%
   select("Soortgroep", "Nederlandse naam", "Wetenschappelijke naam",  "Type soort", "Type monitoring", "Status meetnet/ inhaalslag") %>%
   filter(`Type soort` %in% c("EPS", "VPS") & !is.na(`Type soort`)) %>%
   arrange(Soortgroep, `Nederlandse naam`) %>%

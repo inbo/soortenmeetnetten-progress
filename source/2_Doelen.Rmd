@@ -1,9 +1,9 @@
 
 # Doel soortenmeetnetten {#h:doel}
 
-## Welke soorten monitoren we via een meetnet
+## Welke soorten monitoren we via een meetnet {#h:welkesoorten}
 
-Voor twee type soorten streven we naar een monitoring op basis van meetnetten: Europees prioritaire soorten en Vlaamse prioritaire soorten (ref inleiding tot de blauwdrukken).
+Voor twee type soorten streven we naar een monitoring op basis van meetnetten: Europees prioritaire soorten en Vlaamse prioritaire soorten [@Westra2014].
 
 De **Europees prioritaire soorten** (EPS) omvatten: 
 
@@ -26,7 +26,7 @@ In Bijlage \@ref(h:bijlage) geven we een overzicht van de EPS en VPS en duiden w
 
 Vogels die tot de EPS/VPS behoren worden niet weergegeven in Bijlage \@ref(h:bijlage). Maar ze worden wel allemaal via een meetnet gemonitord. Het gaat om de al langer lopende meetnetten Algemene en Bijzondere Broedvogelmonitoring Vlaanderen (ABV en BBV), de Watervogeltellingen (WVT) en Slaapplaatstellingen (SPT). Daarnaast is er een meetnet in ontwikkeling: de Schaarse Broedvogelmonitoring Vlaanderen (SBV).
 
-Ten slotte vermelden we dat in www.meetnetten.be naast de doelsoort (de soort in functie waarvan een meetnet werd ontworpen) ook andere soorten kunnen ingevoerd worden die tot de soortgroep van de doelsoort behoren en via hetzelfde veldprotocol geteld kunnen worden. Op die manier bekomen we dus ook gestandaardiseerde tellingen voor andere soorten. We moeten er ons wel van bewust blijven dat de meetnetlocaties werden geselecteerd in functie van de doelsoorten en dat er daarom geen garantie is dat de data voor de overige soorten representatief zijn voor Vlaanderen. 
+Ten slotte vermelden we dat in [meetnetten.be](https://www.meetnetten.be) naast de doelsoort (de soort in functie waarvan een meetnet werd ontworpen) ook andere soorten kunnen ingevoerd worden die tot de soortgroep van de doelsoort behoren en via hetzelfde veldprotocol geteld kunnen worden. Op die manier bekomen we dus ook gestandaardiseerde tellingen voor andere soorten. We moeten er ons wel van bewust blijven dat de meetnetlocaties werden geselecteerd in functie van de doelsoorten en dat er daarom geen garantie is dat de data voor de overige soorten representatief zijn voor Vlaanderen. 
 
 ## Welke informatie halen we uit de meetnetten
 

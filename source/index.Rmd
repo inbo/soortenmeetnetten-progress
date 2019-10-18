@@ -11,6 +11,7 @@ subtitle: "Een stand van zaken na drie jaar monitoring"
 reportnr: "Hier komt de DOI van het rapport"
 ordernr: "Het optionele nummer van de opdrachtgever"
 link-citations: TRUE
+bibliography: references.bib
 site: bookdown::bookdown_site
 output:
   bookdown::gitbook:
@@ -33,10 +34,15 @@ opts_chunk$set(
   dpi = 300,
   fig.width = 150 / 25.4,
   fig.height = 100 / 25.4,
-  warning = TRUE,
+  warning = FALSE,
   error = TRUE,
-  message = TRUE
+  message = FALSE
 )
+
+
+library(extrafont)
+loadfonts(device = "win", quiet = TRUE)
+
 library(tidyverse)
 library(INBOtheme)
 theme_set(
@@ -54,11 +60,19 @@ if (!interactive() && opts_knit$get("rmarkdown.pandoc.to") != "html") {
     )
   )
 }
+
+
 ```
 
 
 ```{r}
 
 library(sf)
+library(crosstalk)
+library(leaflet)
+library(plotly)
+library(DT)
+library(googlesheets)
+
 ```
 
