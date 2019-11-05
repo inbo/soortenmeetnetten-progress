@@ -328,7 +328,7 @@ voortgang_meetnetten_cyclus <- tabel_stuurgroep %>%
 ```
 
 
-```{r, warning=FALSE, message=FALSE}
+```{r, warning=FALSE, message=FALSE, cache= FALSE}
 
 #gs_ls() 
 

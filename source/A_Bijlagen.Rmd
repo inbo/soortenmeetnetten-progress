@@ -1,0 +1,141 @@
+
+# (APPENDIX) Bijlagen {-} 
+
+
+# Overzicht soorten {#h:bijlage}
+
+
+```{r, cache = FALSE}
+
+if(doc.type == "html"){
+  
+  soortenlijst %>%
+  filter(`Type soort` %in% c("EPS", "VPS") & !is.na(`Type soort`)) %>%
+  mutate("Wetenschappelijke naam" = str_c("<em>", `Wetenschappelijke naam`, "</em>"),
+         "Nederlandse naam" = ifelse(`Nieuw t.o.v. blauwdruk` == 1,
+                                     str_c("<b>", `Nederlandse naam`, "</b>"),
+                                     `Nederlandse naam`),
+         soortgroep_databank = factor(soortgroep_databank)) %>%
+  select(Soortgroep = soortgroep_databank, "Nederlandse naam", "Wetenschappelijke naam",  "Type soort", "Type monitoring", "Status meetnet/ inhaalslag") %>%
+  arrange(Soortgroep, `Nederlandse naam`) %>%
+  datatable(rownames = FALSE,
+            filter = 'top',
+            escape = FALSE,
+            options = list(
+              columnDefs = list(list(className = 'dt-center', targets = 3:5)),
+              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Dutch.json'),
+              pageLength = 25,
+              initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({'font-size': '9px',  'color': 'black'});",
+              "}"))) %>%
+  formatStyle(columns = colnames(.$x$data), 
+              `font-size` = '9px')
+} else{
+  
+  soortenlijst %>%
+  filter(`Type soort` %in% c("EPS", "VPS") & !is.na(`Type soort`)) %>%
+    # mutate(`Nederlandse naam` = cell_spec(`Nederlandse naam`), "latex", bold = `Nieuw t.o.v. blauwdruk` == 1) %>%
+  select(Soortgroep = soortgroep_databank, "Nederlandse naam", "Type soort", "Type monitoring", "Status meetnet/ inhaalslag") %>%
+    mutate(`Status meetnet/ inhaalslag` = ifelse(is.na(`Status meetnet/ inhaalslag`), "", `Status meetnet/ inhaalslag`)) %>%
+  arrange(Soortgroep, `Nederlandse naam`) %>%
+  kable(format = "pandoc") 
+  
+}
+
+
+  
+```
+
+# Overzicht tellingen van overige soorten {#h:bijlageb}
+
+```{r}
+
+begeleidende_soorten <- aantallen %>%
+  filter(!primaire_soort) %>%
+  group_by(soortgroep, soort_nl, soort_wet) %>%
+  summarise(n_telling = n_distinct(visit_id)) %>%
+  ungroup()
+
+begeleidende_soorten_tabel <- begeleidende_soorten %>%
+  arrange(soortgroep, desc(n_telling)) %>%
+  mutate(soort_wet = str_c("<em>", soort_wet, "</em>"),
+         soortgroep = factor(soortgroep),
+         soort_nl = factor(soort_nl)) %>%
+  rename("Soortgroep" = soortgroep, "Nederlandse naam" = soort_nl, "Wetenschappelijke naam" = soort_wet, "Aantal tellingen" = n_telling)
+
+```
+
+
+```{r begeleidende, results='asis'}
+
+# cat("<table>",paste0("<caption>", "(#tab:begeleidende)", "Aantal tellingen van overige soorten", "</caption>"),"</table>", sep ="\n")
+
+if(doc.type == "html") {
+  
+  datatable(begeleidende_soorten_tabel,
+  rownames = FALSE,
+            filter = 'top',
+            escape = FALSE,
+            options = list(
+              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Dutch.json'),
+              pageLength = 25,
+              initComplete = JS(
+              "function(settings, json) {",
+              "$(this.api().table().header()).css({'font-size': '11px',  'color': 'black'});",
+              "}"))) %>%
+  formatStyle(columns = colnames(.$x$data), 
+              `font-size` = '11px')
+
+  
+} else {
+  options(knitr.kable.NA = '')
+  
+  begeleidende_soorten_tabel %>%
+    kable(format = "pandoc")
+}
+
+
+
+```
+
+
+
+
+
+
+# Technische beschrijving analysemodel libellen-gebiedstelling {#h:bijlagec}
+
+## Selectie ruwe data
+
+We selecteren de tellingen van het meetnet Maanwaterjuffer, Kempense heidelibel en Gevlekte witsnuitlibel voor de periode 2016-2018. Locaties waar de soort niet werd waargenomen in deze periode, nemen we echter niet mee in de analyse. We selecteren ook enkel tellingen van locaties die in minstens twee jaren werden geteld. 
+
+## Model voor verschillen tussen de jaren
+
+We maken gebruik van een generalised linear model (GLMM), waarbij we aannemen dat het getelde aantal $Aantal_{ldj}$ op locatie $l$, dag $d$ en jaar $j$ een negatief binomiale distributie volgt met gemiddelde $\mu_{ldj}$ en overdispersie parameter $k$.
+
+$$Aantal_{ldj} \sim {NB}(\mu_{ldj}, k)$$
+
+$$E(Aantal_{ldj})=\mu_{ldj}$$
+$$var(C_{ldj})=\mu_{ldj}+\frac{\mu_{ldj}^2}{k}$$
+We maken gebruik van  onderstaande link functie.
+
+$$\log(\mu_{ldj}) = \eta_{ldj}$$
+De verklarende variabelen zijn jaar (als categorische variabele) $fJaar_{j}$, het dagnummer binnen een jaar $Dag_{d}$ en het kwadraat van het dagnummer $Dag_{d}^2$:    
+
+$$\eta_{ldj}= B_{0} + B_{1}fJaar_{j} + B_{2}Dag_{d} + B_{3}Dag_{d}^2 + a_{l}$$
+ $a_{l}$ is een random intercept voor locatie $l$. Het volgt een normale distributie met gemiddelde 0 en variantie $\sigma_{l}^2$:  
+ 
+$$a_{l} \sim {N(0,\sigma_{l}^2)} $$
+
+## Model voor jaarlijkse trend
+
+In dit model gebruiken we jaar als continue variabele $Jaar_{j}$. Verder is het model identiek aan het model voor verschillen tussen de jaren. We krijgen dus:
+
+$$\eta_{ldj}= B_{0} + B_{1}Jaar_{j} + B_{2}Dag_{d} + B_{3}Dag_{d}^2 + a_{l}$$
+waarbij $B_{1}$ de gemiddelde jaarlijkse trend weergeeft (in de logschaal). 
+
+
+
+
+

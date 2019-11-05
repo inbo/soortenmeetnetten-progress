@@ -1,1 +1,26 @@
-# Databeheer en dataontsluiting {#h:dataontsluiting}
+# Databeheer {#h:dataontsluiting}
+
+Figuur \@ref(fig:dataflow) stelt de datastromen van de soortenmeetnetten schematisch voor. We bespreken de verschillende onderdelen hiervan.
+
+```{r dataflow, fig.cap= "Schematische voorstellingen van de datastromen", fig.width= 9}
+include_graphics("../images/Meetnetten_dataflow.jpg", dpi = NA)
+```
+
+
+## Applicaties
+
+De webapplicatie van [meetnetten.be](https://www.meetnetten.be) staat ondertussen bijna vier jaar in productie en is geëvolueerd tot een stabiel platform voor het opvolgen van het veldwerk en de invoer en evaluatie van veldgegevens. Voor alle protocollen die op punt staan zijn invoerschermen beschikbaar. Voor twee protocollen (*Otter* en *Wegvangst sprinkhanen*) is het nog niet volledig duidelijk wat de vereisten zijn voor het invoerscherm. De ontwikkeling daarvan staat dan ook voorlopig on hold. Tijdens de evaluatie van het meetjaar 2019 zullen de vereisten vastgelegd worden. 
+
+Voor de meeste protocollen kon er in 2019 al mobiel ingevoerd worden, met uitzondering van de *Algemene Broedvogelmonitoring*, *Amfibieën – fuiken*, *Rugstreeppad – transect* en *Vlinders – gebiedstelling*. De eerste twee daarvan zijn wel al in de testomgeving beschikbaar. De mobiele app is in het veld tot nu toe vooral door een groep van testpersonen gebruikt, waarbij een 80-tal bezoeken mobiel werden ingevoerd. Daarbij zijn nog een aantal problemen opgedoken die een globale promotie van de app bij de vrijwilligers belemmerden. Voor het veldseizoen van 2020 zou dit van de baan moeten zijn en kan de app voluit gepromoot worden. 
+Vanaf 2020 gaan we met de web- en mobiele applicatie van meetnetten in onderhoudsmodus. Bugs worden uiteraard wel aangepakt, kleine verbeteringen of wijzigingen van de functionaliteit blijven ook mogelijk en belangrijke technische updates zullen ook nog gebeuren, maar grote ingrepen of nieuwigheden in de functionaliteit zijn niet meer gebudgetteerd.
+
+## Databanken
+
+Achter [meetnetten.be](https://www.meetnetten.be) steekt een postgres-databank. Er is ook een real-time kopie van de databank beschikbaar. Die kan onder meer gebruikt worden voor R-analyses op de data zonder de databank zelf te belasten. Het datamodel voor meetnetten is stabiel. Er dient wel nog een migratie te gebeuren van data van de plantenmeetnetten (gegevens die ingezameld zijn vóór de mobiele applicatie beschikbaar werd).
+Naast de productiedatabank is er ook een datawarehouse (DWH) ontwikkeld (SQL Server-databank), die bedoeld is om gemakkelijker rapporten te kunnen genereren. Een testversie van de DWH is op dit moment functioneel. Het is de bedoeling om in 2019 ook de definitieve versie nog in productie te brengen. Op de DWH kunnen interne en externe rapporten ontwikkeld worden vanuit verschillende omgevingen (bv. R, MS Reporting Services). Dat zal op vraag aangepakt worden in de loop van 2020. 
+
+## Data-ontsluiting via GBIF
+
+De meetnetten-data worden als INBO dataset ontsloten via GBIF (Global Biodiversity Information Facility, een in 2001 opgerichte internationale organisatie die zich inzet voor het wereldwijd vrij en makkelijk toegankelijk maken van biodiversiteitdata via het Internet) . De datasets worden gegenereerd via views op de DWH. De eerste publicatie is gepland in november 2019, waarna een jaarlijkse actualisatie is gepland. Om gevoelige soorten te beschermen wordt niet altijd de exacte locatie van een vindplaats gepubliceerd. Deze vervaging gebeurt op projectniveau: de vervaging die op de doelsoort wordt toegepast (UTM1 of UTM5), wordt ook gebruikt voor alle andere soorten die werden waargenomen binnen het project en is afgestemd met de vervaging die in waarnemingen.be wordt gebruikt. Voor waarnemingen binnen militaire domeinen wordt altijd een vervaging op 5km niveau aangehouden. De publicatie van de ABV-data gebeurt als aparte dataset, omdat die in het verleden al apart werd gepubliceerd.
+
+

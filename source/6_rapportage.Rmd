@@ -1,1 +1,33 @@
 # Rapportage en communicatie {#h:rapportage}
+
+## Huidige output
+
+### Communicatie naar vrijwilligers en brede publiek
+
+Feedback naar vrijwilligers is essentieel voor de motivatie van de tellers en de werving van nieuwe tellers.
+
+Via de [meetnetten.flits](https://confirmsubscription.com/h/r/C4943535421274DB) communiceert Natuurpunt Studie op regelmatige basis over de monitoringactiviteiten en resultaten. Jaarlijks geven ze ook een overzicht per soortgroep: [overzicht voor 2016](http://natuurpuntvzw.createsend1.com/t/ViewEmail/r/31CA073257D631DB2540EF23F30FEDED), [overzicht voor 2017](http://natuurpuntvzw.createsend1.com/t/ViewEmail/r/D3F2CADDDA703F012540EF23F30FEDED).
+
+Daarnaast worden er ook jaarlijks resultaten gepresenteerd op provinciale natuurstudiedagen.
+
+### Driejaarlijkse voortgangsrapportage
+
+Het huidige rapport geeft een stand van zaken na drie jaar monitoring. Een dergelijk voortgangsrapport zal om de drie jaar gepubliceerd worden.
+
+### Wetenschappelijke output
+
+De soortenmeetnetten werden reeds gepresenteerd op verschillende wetenschappelijke conferenties: o.a. @Speybroeck2017, @Deknijf2019 en @Westra2019. 
+
+## Verdere uitbouw communicatie
+
+In 2019 heeft Natuurpunt Studie in samenwerking met INBO en ANB een nieuw communicatieplan opgemaakt voor de soortenmeetnetten (ref toevoegen Ledegen et al. 2019).
+
+Belangrijke aandachtspunten hierin zijn:
+
+* Regelmatige communicatie van korte berichten via o.a. [natuurberichten](https://www.natuurpunt.be/nieuws?type=43) en de [INBO nieuwsbrief](https://www.inbo.be/nl/nieuwsbrief).
+
+* Tijdige rapportage van analyseresultaten. Hoewel de soortenmeetnetten bedoeld zijn om langetermijn trends te monitoren, is het belangrijk dat ook tussentijdse analyseresultaten gecommuniceerd worden. Dergelijke tussentijdse analyseresultaten kunnen al een eerste indicatie geven van welke veranderingen er zich voordoen (zie paragraaf \@ref(h:classtrend)). Een eerste rapport met analyseresultaten voor libellen zal in 2020 gepubliceerd worden.   
+
+
+
+

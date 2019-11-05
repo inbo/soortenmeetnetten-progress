@@ -3,17 +3,19 @@
 
 ## Opgestarte meetnetten
 
-In de periode 2016-2018 werden 56 nieuwe meetnetten en 8 inhaalslagen opgestart. Deze meetnetten en inhaalslagen kunnen teruggevonden worden in Bijlage \@ref(h:bijlage). Figuur \@ref(fig:opstart) geeft een samenvattend overzicht per soortgroep en per type soort (EPS of VPS).  
+In de periode 2016-2018 werden 56 nieuwe meetnetten en 8 inhaalslagen opgestart. Deze meetnetten en inhaalslagen kunnen teruggevonden worden in Bijlage \@ref(h:bijlage). Figuur \@ref(fig:opstartfig-dummy) geeft een samenvattend overzicht per soortgroep en per type soort (EPS of VPS).  
 
-```{r opstart_fig}
+```{r opstartfig}
 
 soorten_opgestart <- soortenlijst %>%
   filter(`Status meetnet/ inhaalslag` == "opgestart 2016-2018" & !is.na(`Status meetnet/ inhaalslag`)) %>%
   mutate(soortgroep_databank = factor(soortgroep_databank))
 
-soorten_shared <- SharedData$new(soorten_opgestart)
-
-bscols(
+if(doc.type == "html"){
+  
+  soorten_shared <- SharedData$new(soorten_opgestart)
+  
+  bscols(
   list(
     bscols(widths = c(4, 4),
     filter_checkbox("Type monitoring", "Type monitoring", soorten_shared, ~`Type monitoring`, inline = TRUE),
@@ -25,29 +27,37 @@ bscols(
       
   )
 )
+} else {
+  
+  ggplot(soorten_opgestart, aes(x = soortgroep_databank, fill = `Type monitoring`)) +
+    geom_bar() +
+    labs(x = "Soortgroep", y = "Aantal") +
+    coord_flip() +
+    facet_wrap(~`Type soort`) 
+    
+  
+}
+
+
+
 
 
 ```
 
+```{r opstartfig-dummy, fig.cap= "Overzicht van de opgestarte meetnetten en inhaalsagen in de periode 2016-2018"}
+include_graphics("../data/dummy_figuur.png")
+```
 
 
-Voor een aantal soorten zijn de geplande meetnetten volgens de blauwdruk soortenmonitoring (ref) nog niet opgestart. Het gaat enerzijds om de Heikikker en Poelkikker en anderzijds om de verschillende veleermuizen. 
+Voor een aantal soorten zijn de geplande meetnetten volgens de blauwdruk soortenmonitoring [@DeKnijf2014] nog niet opgestart. Het gaat enerzijds om de Heikikker en Poelkikker en anderzijds om de verschillende vleermuizen. 
 De Heikikker en Poelkikker zijn twee soorten die zeer moeilijk waarneembaar zijn en waarvoor het bijgevolg moeilijk haalbaar is om ze via vrijwilligers te monitoren. INBO heeft daarom een methode op basis van eDNA uitgewerkt in het monitoringsprotocol versie 2.0 voor amfibieën (referentie).    
 De Vleermuizenwerkgroep monitort al vele jaren vleermuizen via wintertellingen. Maar er is momenteel nog geen samenwerking tussen de Vleermuizenwerkgroep en INBO/ANB in het kader van het soortenmonitoringsproject. De ingezamelde gegevens van de wintertellingen komen dus (nog) niet in de meetnetten-databank terecht. In de toekomst hopen we alsnog tot een samenwerkingsakkoord te komen.   
 
 ## Inzet vrijwilligers
 
-Op basis van de ingevoerde bezoeken in www.meetnetten.be, zien we dat sinds de opstart van de nieuwe soortenmeetnetten in 2016 al ongeveer 350 tellers (hoofdteller of medeteller) een telling uitvoerde. In totaal brachten deze tellers bijna 4700 bezoeken aan een van de meetnetlocaties.
+Op basis van de ingevoerde bezoeken in [meetnetten.be](https://www.meetnetten.be), zien we dat sinds de opstart van de nieuwe soortenmeetnetten in 2016 al ongeveer 350 tellers (hoofdteller of medeteller) een telling uitvoerde. In totaal brachten deze tellers bijna 4700 bezoeken aan een van de meetnetlocaties.
 
-Figuur \@ref(fig:bezoekenfiguur) geeft de evolutie van het aantal tellers en het aantal bezoeken. We zien in het algemeen een positieve evolutie in zowel het aantal tellers als het aantal bezoeken door de tellers. De daling bij de plantenmeetnetten is waarschijnlijk te verklaren doordat er met een meetcyclus van drie jaar wordt gewerkt. In het eerste jaar is er ruime keuze aan locaties die geteld moeten worden, maar in jaar 2 en 3 wordt het aanbod van de te tellen locaties kleiner en zal het dus ook moeilijker zijn om tellers te vinden.
-
-De aantallen voor 2019 tonen we niet in Figuur \@ref(fig:bezoekenfiguur) omdat nog niet alle bezoeken van dat jaar werden ingevoerd. We vermelden ook dat niet alle bezoeken in kader van de soortenmeetnetten geregistreerd worden in meetnetten.be. Dit is het geval voor de inhaalslag van de Das en deels ook voor de plantenmeetnetten. 
-
-
-
-
-
-
+Figuur \@ref(fig:bezoekenfiguur) geeft de evolutie van het aantal tellers en het aantal bezoeken. We zien een positieve evolutie in zowel het aantal tellers als het aantal bezoeken door de tellers. De daling bij de plantenmeetnetten is waarschijnlijk te verklaren doordat er met een meetcyclus van drie jaar wordt gewerkt. In het eerste jaar is er ruime keuze aan locaties die geteld moeten worden, maar in jaar 2 en 3 wordt het aanbod van de te tellen locaties kleiner en zal het dus ook moeilijker zijn om tellers te vinden.
 
 ```{r}
 
@@ -82,20 +92,25 @@ vrijwilligers_bezoeken %>%
   
 ```
 
-
-
 ```{r}
 
 tellers_ind_overzicht <- tellers_overzicht %>%
+  filter(jaar < 2019) %>%
   group_by(naam_teller) %>%
   summarise(n_teller = n()) %>%
   ungroup()
-  ggplot(aes(x = n_teller)) +
-  geom_histogram(binwidth = 1)
-
-
   
+mean_telling <- round(mean(tellers_ind_overzicht$n_teller), 0)
+median_telling <- median(tellers_ind_overzicht$n_teller)
+tellers <- max(tellers_ind_overzicht$n_teller)
+  
+
 ```
+
+
+Gemiddeld gezien voerde een teller `r mean_telling` tellingen uit in de periode 2016-2018. 
+
+De aantallen voor 2019 tonen we niet in Figuur \@ref(fig:bezoekenfiguur) omdat nog niet alle bezoeken van dat jaar werden ingevoerd. We vermelden ook dat niet alle bezoeken in kader van de soortenmeetnetten geregistreerd worden in meetnetten.be. Dit is het geval voor de inhaalslag van de Das en deels ook voor de plantenmeetnetten. 
 
 
 
@@ -103,11 +118,11 @@ tellers_ind_overzicht <- tellers_overzicht %>%
 
 ### Doelsoorten
 
-Jaarlijks gebeurt er na het veldseizoen voor alle meetnetten een grondige evaluatie van de gegevensinzameling. Daarbij evalueren we de kwaliteit van de ingezamelde gegevens en toetsen we de kwantiteit aan gegevens aan de vooropgestelde doelen per meetnet. Voor het meerendeel van de meetnetten drukken we deze doelen uit in het aantal getelde meetnetlocaties conform het monitoringsprotocol. Een meetnetlocatie is geteld conform het monitoringsprotocol als de telmethode correct werd gevolgd bij geschikte weersomstandigheden en als er voldoende tellingen werden uitgevoerd binnen de geschikte telperiode.
+Jaarlijks gebeurt er na het veldseizoen voor alle meetnetten een grondige evaluatie van de gegevensinzameling. Daarbij evalueren we de kwaliteit van de ingezamelde gegevens en toetsen we de kwantiteit aan gegevens aan de vooropgestelde doelen per meetnet. Voor het merendeel van de meetnetten drukken we deze doelen uit in het aantal getelde meetnetlocaties conform het monitoringsprotocol. Een meetnetlocatie is geteld conform het monitoringsprotocol als de telmethode correct werd gevolgd bij geschikte weersomstandigheden en als er voldoende tellingen werden uitgevoerd binnen de geschikte telperiode.
 
-Figuur \@ref(fig:doelen) geeft per jaar en per meetnet/inhaalslag het percentage van de jaarlijkse doelen dat gehaald werd (voor de plantenmeetnetten verwijzen we naar \@ref(fig:doelen_cyclus)). We zien dat in de meeste gevallen de doelen goed gehaald worden, m.a.w. dat alle afgesproken locaties geteld werden conform het veldprotocol. 
+Figuur \@ref(fig:doelen) geeft per jaar en per meetnet/inhaalslag het percentage van de jaarlijkse doelen dat gehaald werd (voor de plantenmeetnetten verwijzen we naar \@ref(fig:doelencyclus)). We zien dat in de meeste gevallen de doelen goed gehaald worden, m.a.w. dat alle afgesproken locaties geteld werden conform het veldprotocol. 
 
-```{r doelen, fig.cap = "Overzicht doelbereik meetnetten", fig.height= 7, fig.width= 6.5}
+```{r doelen, fig.cap = "Overzicht doelbereik meetnetten: de kleuren geven aan welk aandeel van het afgesproken aantal locaties geteld werden conform het protocol", fig.height= 7, fig.width= 6.5}
 
   colors_beoordeling <- c( "0 - 49 %" = "red", "50 - 69 %" = "orange", "70 - 89 %" = inbo.geelgr, "90 - 99 %" = inbo.lichtblauw , ">= 100%" = inbo.donkergroen)
 
@@ -136,7 +151,7 @@ voortgang_meetnetten %>%
 Sommige meetnetten hebben een 3-jarige meetcyclus, wat betekent dat alle meetnetlocaties binnen een periode van drie jaar geteld moeten worden. Voor deze meetnetten stellen we naast de jaarlijkse doelen ook doelen voor de volledige meetcyclus. Figuur \@ref(fig:doelencyclus) toont het doelbereik van de meetcyclus doelen voor de meetnetten waar de eerste meetcyclus al volledig werd doorlopen in de periode 2016 - 2018. Voor de vaatplanten stellen we geen aparte doelen per meetnet op maar één meetcyclus doel voor alle meetnetten samen. We zien dat ook de meetcyclusdoelen goed gehaald worden. Wel moeten we opmerken dat bij de vaatplanten niet voor alle getelde locaties het afgezochte traject werd opgeslagen (wat onderdeel uitmaakt van veldprotocol). Door het promoten van de vernieuwde meetnetten-app voor het invoeren van de vaatplantengegevens hopen we dit in de toekomst te verbeteren. Deze app slaat immers automatisch het traject op.     
 
 
-```{r doelencyclus, fig.cap = "Overzicht doelbereik meetnetten meetcyclus 2016-2018", fig.height= 3, fig.width= 6}
+```{r doelencyclus, fig.cap = "Overzicht doelbereik meetnetten meetcyclus 2016-2018: de kleuren geven aan welk aandeel van het afgesproken aantal locaties geteld werden conform het protocol", fig.height= 3, fig.width= 6}
 voortgang_meetnetten_cyclus %>%
  # filter(meetnet_type == "meetnet") %>%
   filter(is_sample_history == 1) %>%
@@ -155,10 +170,7 @@ voortgang_meetnetten_cyclus %>%
   labs(fill = "Doelbereik meetcyclus (%)", x = "Jaar", y = "Meetnet of inhaalslag")
 ```
 
-
-
-
-
+Algemeen kunnen we de citizen science aanpak voor de soortenmonitoring via gestructureerde meetnetten als zeer succesvol beschouwen.  
 
 ```{r, warnings = FALSE}
 
@@ -181,13 +193,15 @@ bezochte_locaties_sf <- locaties %>%
 ```
 
 
-Onderstaande interactieve figuur geeft een overzicht van de locaties waarvoor tellingen werden ingevoerd in meetnetten.be over de verschillende jaren. Naast tellingen voor de meetnetlocaties, kunnen vrijwilligers ook tellingen invoeren voor extra locaties die niet strikt tot de meetnetten behoren. Dit is voornamelijk het geval bij de amfibieënmeetnetten. Deze gegevens kunnen gebruikt worden voor verspreidingsonderzoek of voor het berekenen van lokale trends. 
+Figuur \@ref(fig:telfig-dummy) geeft een overzicht van de locaties waarvoor tellingen werden ingevoerd in meetnetten.be over de verschillende jaren. Naast tellingen voor de meetnetlocaties, kunnen vrijwilligers ook tellingen invoeren voor extra locaties die niet strikt tot de meetnetten behoren. Dit is voornamelijk het geval bij de amfibieënmeetnetten. Deze gegevens kunnen gebruikt worden voor verspreidingsonderzoek of voor het berekenen van lokale trends. 
 
 In de figuur zijn de punten random verschoven binnen een straal van 5 kilometer van de exacte ligging van de locaties en zijn de mogelijkheden om in te zoomen beperkt. Dit doen we om te voldoen aan het vervagingsbeleid dat wordt gehanteerd voor de data van de soortenmeetnetten.   
 
-```{r kaart, fig.cap= "Test"}
+```{r kaart}
 
-locaties_shared <- SharedData$new(filter(bezochte_locaties_sf, jaar < 2019))
+if(doc.type == "html") {
+  
+  locaties_shared <- SharedData$new(filter(bezochte_locaties_sf, jaar < 2019))
 
 bscols(
   list(
@@ -203,52 +217,64 @@ bscols(
       add_histogram(color = ~Kleur, colors = inbo.groen) %>%
       layout(legend = list(x = 100, y = 0.5))
       ) 
-      
   )
 )
+} else {
+  
+  provincies <- read_sf("../data/shape_file", "Provincies2015_WGS84")
+  
+ bezochte_locaties_sf%>%
+    filter(jaar < 2019) %>%
+    mutate(type_locatie = ifelse(is_sample == 1, "Meetnetlocatie", "Extra locatie")) %>%
+    st_drop_geometry() %>%
+    ggplot(aes(x = jaar, fill = type_locatie)) +
+    geom_bar() +
+    facet_wrap(~soortgroep, scales = "free_y") +
+   labs(y = "Aantal getelde locaties", fill = "Type locatie")
+  
+  # ggplot() +
+  # geom_sf(data = provincies) +  
+  # geom_sf(data = bezochte_locaties_sf_filter, aes(fill = type_locatie, colour = type_locatie), alpha = 0.5) +
+  # facet_grid(soortgroep ~ jaar) +
+  #   theme(legend.position = "bottom",
+  #        panel.background = element_rect(fill = "white", colour = "grey50"),
+  #       panel.grid = element_blank(),
+  #       axis.text = element_blank(),
+  #       axis.ticks = element_blank(),)
+  
+}
 
+
+
+```
+
+```{r telfig-dummy, fig.cap= "Overzicht van de tellingen in de periode 2016-2018"}
+include_graphics("../data/dummy_figuur.png")
 ```
 
 ### Overige soorten
 
-Zoals vermeld in paragraaf \@ref(h:welkesoorten) kunnen vrijwilligers, naast tellingen voor de doelsoort(de soort waarvoor het meetnet ontworpen werd), ook optioneel tellingen ingeven voor andere soorten uit de soortgroep van de doelsoort die via hetzelfde veldprotocol geteld kunnen worden. Voor drie soortgroepen werden er al tellingen ingevoerd voor overige soorten: dagvlinders, amfibieën en libellen. Tabel \@ref (tab:begeleidende) geeft het aantal ingevoerde tellingen per soort, gerangschikt van hoog naar laag. De tabel bevat ook soorten die een doelsoort zijn van een bepaald meetnet. In deze gevallen gaat het om tellingen in een ander meetnet dan in het meetnet van de doelsoort. Dus bijvoorbeeld een telling van Ornaje zandoogje in het meetnet Heivlinder.
-
-
-```{r}
-
-begeleidende_soorten <- aantallen %>%
-  filter(!primaire_soort) %>%
-  group_by(soortgroep, soort_nl, soort_wet) %>%
-  summarise(n_telling = n_distinct(visit_id)) %>%
-  ungroup()
-
-```
-
-```{r begeleidende}
-
-begeleidende_soorten %>%
-  arrange(soortgroep, desc(n_telling)) %>%
-  mutate(soort_wet = str_c("<em>", soort_wet, "</em>"),
-         soortgroep = factor(soortgroep),
-         soort_nl = factor(soort_nl)) %>%
-  rename("Soortgroep" = soortgroep, "Nederlandse naam" = soort_nl, "Wetenschappelijke naam" = soort_wet, "Aantal tellingen" = n_telling) %>%
-  datatable(rownames = FALSE,
-            filter = 'top',
-            escape = FALSE,
-            caption = "Aantal tellingen van overige soorten (soorten die geen doelsoort zijn van een meetnet)",
-            options = list(
-              language = list(url = '//cdn.datatables.net/plug-ins/1.10.11/i18n/Dutch.json'),
-              pageLength = 10,
-              initComplete = JS(
-              "function(settings, json) {",
-              "$(this.api().table().header()).css({'font-size': '11px',  'color': 'black'});",
-              "}"))) %>%
-  formatStyle(columns = colnames(.$x$data), 
-              `font-size` = '11px')
-```
-
+Zoals vermeld in paragraaf \@ref(h:welkesoorten) kunnen vrijwilligers, naast tellingen voor de doelsoort(de soort waarvoor het meetnet ontworpen werd), ook optioneel tellingen ingeven voor andere soorten uit de soortgroep van de doelsoort die via hetzelfde veldprotocol geteld kunnen worden. Voor drie soortgroepen werden er al tellingen ingevoerd voor overige soorten: dagvlinders, amfibieën en libellen. Bijlage \@ref(h:bijlageb) geeft het aantal ingevoerde tellingen per soort, gerangschikt van hoog naar laag. De tabel bevat ook soorten die een doelsoort zijn van een bepaald meetnet. In deze gevallen gaat het om tellingen in een ander meetnet dan in het meetnet van de doelsoort. Dus bijvoorbeeld een telling van Oranje zandoogje in het meetnet Heivlinder.
 
 
 ## Bijsturing monitoringsprotocollen
+
+Een monitoringsprotocol beschrijft per meetnet de telmethode (het veldprotocol) en de selectie van de te tellen locaties (meetnetlocaties). De **eerste versie** van de monitoringsprotocollen werd gebruikt als basis voor de opstart van de meetnetten (refs toevoegen). 
+
+Op basis van de jaarlijkse evaluatie van de gegevensinzameling, werden voor verschillende meetnetten aanpassingen aan het monitoringsprotocol doorgevoerd. Voor de meeste soortgroepen werd er daarom een nieuwe versie (**versie 2.0**) van het monitoringsprotocol opgemaakt.
+
+Het gaat om volgende rapporten:
+
+* Amfibieën (ref toevoegen Speybroeck et al. 2019)
+* Dagvlinders (ref toevoegen Maes et al. 2019)
+* Libellen (ref toevoegen De Knijf et al. 2019)
+* Planten (ref toevoegen Van Landuyt et al. 2019)
+* Zoogdieren (ref toevoegen Van Den Berge et al. 2019)
+* Kevers (ref toevoegen Thomaes et al. 2019)
+* Spinnen (ref toevoegen Van Keer et al. 2019)
+
+
+
+
 
 

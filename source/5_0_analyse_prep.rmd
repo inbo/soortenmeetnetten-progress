@@ -1,0 +1,675 @@
+
+```{r select data, warning = FALSE}
+
+protocol_selectie <- "Libellen - Populatietelling per locatie"
+
+locatie_detail <- locaties %>%
+  st_drop_geometry() %>%
+  filter(locatie_type == "locatie") %>%
+  select(meetnet, locatie, is_active, is_sample)
+
+meetnetten_selectie <- bezoeken %>%
+  filter(jaar != 2019) %>%
+  filter(protocol == protocol_selectie) %>%
+  group_by(meetnet, protocol) %>%
+  summarise(n_jaar = n_distinct(jaar)) %>%
+  filter(n_jaar == 3)
+
+bezoeken_selectie <- bezoeken %>%
+  filter(meetnet %in% meetnetten_selectie$meetnet) %>%
+  left_join(locatie_detail, by = c("meetnet", "locatie")) %>%
+  left_join(werkpakketten, by = "meetnet") %>%
+  mutate(doy_scaled = (doy - doy_mid)/28,
+         fjaar = factor(jaar)) %>%
+  group_by(soortgroep, meetnet, protocol, locatie, jaar, fjaar) %>%
+  mutate(n_obs = n_distinct(visit_id)) %>%
+  ungroup()
+
+bezoeken_selectie <- bezoeken_selectie %>%
+  filter(voor_analyse & !is.na(is_active)) 
+
+aantallen_meetnet <- bezoeken_selectie %>%
+  select(soortgroep, meetnet, protocol, locatie, jaar, datum, doy, doy_scaled, doy_min, doy_max, doy_mid, visit_id, n_obs) %>%
+  left_join(select(aantallen, visit_id, soort_nl, soort_wet, primaire_soort, geslacht, activiteit, levensstadium, aantal), by = "visit_id")
+
+aantallen_selectie <- aantallen_meetnet %>%
+  filter(primaire_soort)
+
+```
+
+
+```{r aantal individuen}
+
+n_individuen_selectie <- aantallen_selectie %>%
+  group_by(soortgroep, meetnet, protocol, locatie, visit_id, jaar, datum, doy, doy_scaled, doy_min, doy_max, doy_mid, soort_nl) %>%
+  summarise(n_individuen = sum(aantal * (ifelse(activiteit == "copula", 2, 1)))) %>%
+  ungroup() %>%
+  group_by(jaar) %>%
+  mutate(doy_median = median(doy)) %>%
+  ungroup()
+
+```
+
+
+```{r}
+
+analyseset <- n_individuen_selectie %>%
+  filter(jaar != 2019) %>%
+  group_by(meetnet, locatie) %>%
+  mutate(n_jaren = n_distinct(jaar),
+            max_count = max(n_individuen)) %>%
+  ungroup() %>%
+  filter(n_jaren > 1 & max_count > 0) %>%
+  mutate(fjaar = factor(jaar),
+         locatie = factor(locatie),
+         doy_scaled_2 = doy_scaled * doy_scaled)
+  
+
+``` 
+
+
+```{r}
+
+overzicht_index_2016 <- NULL
+overzicht_compare_years <- NULL
+overzicht_max_count <- NULL
+overzicht_trend <- NULL
+overzicht_trend_totaal <- NULL
+```
+
+
+```{r}
+soort <- "Maanwaterjuffer"
+
+analyseset_soort <- analyseset %>%
+  filter(meetnet == soort)
+
+# Model 1
+
+model.matrix(~fjaar, analyseset_soort) %>% # create dummy variable for year
+as.data.frame() %>%
+select(-1) %>% # drop intercept
+bind_cols(analyseset_soort) -> analyseset_soort_bru
+
+analyseset_soort_bru <- analyseset_soort_bru %>%
+  mutate(loc_id = as.integer(factor(locatie)))
+
+n_loc <- n_distinct(analyseset_soort_bru$locatie)
+
+#inlabru
+comp_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018 +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_doy_iid_inlabru <- bru(comp_inlabru, data = analyseset_soort_bru, family = "nbinomial")
+
+#inla
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE)
+                  )
+
+# index
+
+year_simdata <- analyseset_soort_bru %>%
+  distinct(meetnet, jaar, fjaar, fjaar2017, fjaar2018) %>%
+  filter(fjaar != "2016")
+  
+index_2016 <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = year_simdata, 
+                      formula = ~ exp(fjaar2017 + fjaar2018))
+
+overzicht_index_2016 <- overzicht_index_2016 %>%
+  bind_rows(index_2016)
+
+
+# verschillen tussen de jaren
+expand.grid(from = 2016:2018, to = 2016:2018) %>%
+  filter(from != to) %>%
+  mutate(
+    fjaar2017 = ifelse(
+      from == 2017, 
+      -1, 
+      ifelse(to == 2017, 1, 0)
+    ),
+    fjaar2018 = ifelse(
+      from == 2018, 
+      -1, 
+      ifelse(to == 2018, 1, 0)
+    )
+  ) -> contrast_base
+
+contrast_base %>%
+  select(starts_with("fjaar")) %>%
+  inla.make.lincombs() %>%
+  `names<-`(paste(contrast_base$from, contrast_base$to, sep = "-")) -> lc
+
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE),
+                  lincomb = lc
+                  )
+
+compare_years <- model_nbinom_doy_iid$summary.lincomb.derived %>%
+  rownames_to_column("parameter") %>%
+  mutate(soort = soort,
+         from = contrast_base$from,
+         to = contrast_base$to) %>%
+  select(from, to, everything())
+
+overzicht_compare_years <- overzicht_compare_years %>%
+  bind_rows(compare_years)
+
+# maximale telling per jaar
+
+doy_range <- analyseset_soort_bru %>%
+  select(doy_min, doy_max, doy_mid) %>%
+  unique()
+
+doy_simdata <- data.frame(
+  meetnet = soort,
+  doy_scaled = ((doy_range$doy_min - doy_range$doy_mid):(doy_range$doy_max - doy_range$doy_mid))/28) %>%
+  mutate(doy_scaled_2 = doy_scaled^2,
+         doy = doy_scaled * 28 + doy_range$doy_mid)
+
+doy_effect_nbinom <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = doy_simdata, 
+                      formula = ~exp(doy_scaled + doy_scaled_2))
+
+peak_nbinom <-  (doy_effect_nbinom %>%
+  top_n(1, mean))$doy 
+
+simulate_data_peak_nbinom <- analyseset_soort_bru %>%
+  distinct(fjaar2017, fjaar2018, jaar) %>%
+  mutate(meetnet = soort,
+    doy_scaled = (peak_nbinom - doy_range$doy_mid)/28,
+         doy_scaled_2 = doy_scaled^2,
+         peak_nbinom = peak_nbinom)
+
+max_count <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = simulate_data_peak_nbinom, 
+                      formula = ~ exp(Intercept + doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018))
+
+overzicht_max_count <- overzicht_max_count %>%
+  bind_rows(max_count)
+
+```
+
+
+```{r}
+#Model 2
+
+analyseset_soort_2 <- analyseset_soort %>%
+  mutate(loc_id = as.integer(factor(locatie)),
+         year_scaled = jaar -2016)
+
+n_loc <- n_distinct(analyseset_soort$locatie)
+
+trend_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + year_scaled +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_trend <- bru(trend_inlabru, data = analyseset_soort_2, family = "nbinomial")
+
+#gemiddelde jaarlijkse trend
+
+calc_trend <- function(x){
+ (exp(x) - 1) * 100
+}
+
+trend <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend = mean, trend_lcl = quant0.025, trend_ucl = quant0.975)
+
+overzicht_trend <- overzicht_trend %>%
+  bind_rows(trend)
+
+#totale trend over volledige periode 
+
+periode <- n_distinct(analyseset_soort$jaar)
+
+calc_trend_totaal <- function(x){
+ (exp(x * (periode - 1)) - 1) * 100
+}
+
+trend_totaal <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend_totaal) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend_tot = mean, trend_tot_lcl = quant0.025, trend_tot_ucl = quant0.975)
+
+overzicht_trend_totaal <- overzicht_trend_totaal %>%
+  bind_rows(trend_totaal)
+```
+
+```{r}
+
+
+waic_overview <- data.frame(
+  soort = soort,
+  model = "GLMM Nbinomial",
+  measure = "WAIC",
+  year_factor = model_nbinom_doy_iid_inlabru$waic$waic,
+  linear_trend = model_nbinom_trend$waic$waic) %>%
+  mutate(type_trend = ifelse((linear_trend - year_factor) > 0,
+                        "Niet lineair",
+                        ifelse((linear_trend - year_factor) > -2,
+                               "Quasi lineair", "Lineair")))
+
+overzicht_type_trend <- NULL
+overzicht_type_trend <- overzicht_type_trend %>%
+  bind_rows(waic_overview)
+
+
+```
+
+
+```{r}
+soort <- "Kempense heidelibel"
+
+analyseset_soort <- analyseset %>%
+  filter(meetnet == soort)
+```
+
+```{r}
+analyseset_soort <- analyseset %>%
+  filter(meetnet == soort)
+
+# Model 1
+
+model.matrix(~fjaar, analyseset_soort) %>% # create dummy variable for year
+as.data.frame() %>%
+select(-1) %>% # drop intercept
+bind_cols(analyseset_soort) -> analyseset_soort_bru
+
+analyseset_soort_bru <- analyseset_soort_bru %>%
+  mutate(loc_id = as.integer(factor(locatie)))
+
+n_loc <- n_distinct(analyseset_soort_bru$locatie)
+
+#inlabru
+comp_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018 +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_doy_iid_inlabru <- bru(comp_inlabru, data = analyseset_soort_bru, family = "nbinomial")
+
+#inla
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE)
+                  )
+
+# index
+
+year_simdata <- analyseset_soort_bru %>%
+  distinct(meetnet, jaar, fjaar, fjaar2017, fjaar2018) %>%
+  filter(fjaar != "2016")
+  
+index_2016 <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = year_simdata, 
+                      formula = ~ exp(fjaar2017 + fjaar2018))
+
+overzicht_index_2016 <- overzicht_index_2016 %>%
+  bind_rows(index_2016)
+
+
+# verschillen tussen de jaren
+expand.grid(from = 2016:2018, to = 2016:2018) %>%
+  filter(from != to) %>%
+  mutate(
+    fjaar2017 = ifelse(
+      from == 2017, 
+      -1, 
+      ifelse(to == 2017, 1, 0)
+    ),
+    fjaar2018 = ifelse(
+      from == 2018, 
+      -1, 
+      ifelse(to == 2018, 1, 0)
+    )
+  ) -> contrast_base
+
+contrast_base %>%
+  select(starts_with("fjaar")) %>%
+  inla.make.lincombs() %>%
+  `names<-`(paste(contrast_base$from, contrast_base$to, sep = "-")) -> lc
+
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE),
+                  lincomb = lc
+                  )
+
+compare_years <- model_nbinom_doy_iid$summary.lincomb.derived %>%
+  rownames_to_column("parameter") %>%
+  mutate(soort = soort,
+         from = contrast_base$from,
+         to = contrast_base$to) %>%
+  select(from, to, everything())
+
+overzicht_compare_years <- overzicht_compare_years %>%
+  bind_rows(compare_years)
+
+# maximale telling per jaar
+
+doy_range <- analyseset_soort_bru %>%
+  select(doy_min, doy_max, doy_mid) %>%
+  unique()
+
+doy_simdata <- data.frame(
+  meetnet = soort,
+  doy_scaled = ((doy_range$doy_min - doy_range$doy_mid):(doy_range$doy_max - doy_range$doy_mid))/28) %>%
+  mutate(doy_scaled_2 = doy_scaled^2,
+         doy = doy_scaled * 28 + doy_range$doy_mid)
+
+doy_effect_nbinom <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = doy_simdata, 
+                      formula = ~exp(doy_scaled + doy_scaled_2))
+
+peak_nbinom <-  (doy_effect_nbinom %>%
+  top_n(1, mean))$doy 
+
+simulate_data_peak_nbinom <- analyseset_soort_bru %>%
+  distinct(fjaar2017, fjaar2018, jaar) %>%
+  mutate(meetnet = soort,
+    doy_scaled = (peak_nbinom - doy_range$doy_mid)/28,
+         doy_scaled_2 = doy_scaled^2,
+         peak_nbinom = peak_nbinom)
+
+max_count <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = simulate_data_peak_nbinom, 
+                      formula = ~ exp(Intercept + doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018))
+
+overzicht_max_count <- overzicht_max_count %>%
+  bind_rows(max_count)
+```
+
+
+```{r}
+#Model 2
+
+analyseset_soort_2 <- analyseset_soort %>%
+  mutate(loc_id = as.integer(factor(locatie)),
+         year_scaled = jaar -2016)
+
+n_loc <- n_distinct(analyseset_soort$locatie)
+
+trend_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + year_scaled +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_trend <- bru(trend_inlabru, data = analyseset_soort_2, family = "nbinomial")
+
+#gemiddelde jaarlijkse trend
+
+calc_trend <- function(x){
+ (exp(x) - 1) * 100
+}
+
+trend <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend = mean, trend_lcl = quant0.025, trend_ucl = quant0.975)
+
+overzicht_trend <- overzicht_trend %>%
+  bind_rows(trend)
+
+#totale trend over volledige periode 
+
+periode <- n_distinct(analyseset_soort$jaar)
+
+calc_trend_totaal <- function(x){
+ (exp(x * (periode - 1)) - 1) * 100
+}
+
+trend_totaal <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend_totaal) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend_tot = mean, trend_tot_lcl = quant0.025, trend_tot_ucl = quant0.975)
+
+overzicht_trend_totaal <- overzicht_trend_totaal %>%
+  bind_rows(trend_totaal)
+
+```
+
+
+```{r}
+
+waic_overview <- data.frame(
+  soort = soort,
+  model = "GLMM Nbinomial",
+  measure = "WAIC",
+  year_factor = model_nbinom_doy_iid_inlabru$waic$waic,
+  linear_trend = model_nbinom_trend$waic$waic) %>%
+  mutate(type_trend = ifelse((linear_trend - year_factor) > 2,
+                        "Niet lineair",
+                        ifelse((linear_trend - year_factor) > 0,
+                               "Quasi lineair", "Lineair")))
+
+overzicht_type_trend <- overzicht_type_trend %>%
+  bind_rows(waic_overview)
+
+
+
+```
+
+
+
+
+```{r}
+soort <- "Gevlekte witsnuitlibel"
+
+analyseset_soort <- analyseset %>%
+  filter(meetnet == soort)
+```
+
+```{r}
+analyseset_soort <- analyseset %>%
+  filter(meetnet == soort)
+
+# Model 1
+
+model.matrix(~fjaar, analyseset_soort) %>% # create dummy variable for year
+as.data.frame() %>%
+select(-1) %>% # drop intercept
+bind_cols(analyseset_soort) -> analyseset_soort_bru
+
+analyseset_soort_bru <- analyseset_soort_bru %>%
+  mutate(loc_id = as.integer(factor(locatie)))
+
+n_loc <- n_distinct(analyseset_soort_bru$locatie)
+
+#inlabru
+comp_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018 +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_doy_iid_inlabru <- bru(comp_inlabru, data = analyseset_soort_bru, family = "nbinomial")
+
+#inla
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE)
+                  )
+
+# index
+
+year_simdata <- analyseset_soort_bru %>%
+  distinct(meetnet, jaar, fjaar, fjaar2017, fjaar2018) %>%
+  filter(fjaar != "2016")
+  
+index_2016 <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = year_simdata, 
+                      formula = ~ exp(fjaar2017 + fjaar2018))
+
+overzicht_index_2016 <- overzicht_index_2016 %>%
+  bind_rows(index_2016)
+
+
+# verschillen tussen de jaren
+expand.grid(from = 2016:2018, to = 2016:2018) %>%
+  filter(from != to) %>%
+  mutate(
+    fjaar2017 = ifelse(
+      from == 2017, 
+      -1, 
+      ifelse(to == 2017, 1, 0)
+    ),
+    fjaar2018 = ifelse(
+      from == 2018, 
+      -1, 
+      ifelse(to == 2018, 1, 0)
+    )
+  ) -> contrast_base
+
+contrast_base %>%
+  select(starts_with("fjaar")) %>%
+  inla.make.lincombs() %>%
+  `names<-`(paste(contrast_base$from, contrast_base$to, sep = "-")) -> lc
+
+model_nbinom_doy_iid <- inla(n_individuen ~ fjaar + doy_scaled + doy_scaled_2 + f(locatie, model = "iid"),
+                  family = "nbinomial",
+                  data = analyseset_soort,
+                  control.compute = list(config = TRUE),
+                  control.predictor = list(compute = TRUE),
+                  lincomb = lc
+                  )
+
+compare_years <- model_nbinom_doy_iid$summary.lincomb.derived %>%
+  rownames_to_column("parameter") %>%
+  mutate(soort = soort,
+         from = contrast_base$from,
+         to = contrast_base$to) %>%
+  select(from, to, everything())
+
+overzicht_compare_years <- overzicht_compare_years %>%
+  bind_rows(compare_years)
+
+# maximale telling per jaar
+
+doy_range <- analyseset_soort_bru %>%
+  select(doy_min, doy_max, doy_mid) %>%
+  unique()
+
+doy_simdata <- data.frame(
+  meetnet = soort,
+  doy_scaled = ((doy_range$doy_min - doy_range$doy_mid):(doy_range$doy_max - doy_range$doy_mid))/28) %>%
+  mutate(doy_scaled_2 = doy_scaled^2,
+         doy = doy_scaled * 28 + doy_range$doy_mid)
+
+doy_effect_nbinom <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = doy_simdata, 
+                      formula = ~exp(doy_scaled + doy_scaled_2))
+
+peak_nbinom <-  (doy_effect_nbinom %>%
+  top_n(1, mean))$doy 
+
+simulate_data_peak_nbinom <- analyseset_soort_bru %>%
+  distinct(fjaar2017, fjaar2018, jaar) %>%
+  mutate(meetnet = soort,
+    doy_scaled = (peak_nbinom - doy_range$doy_mid)/28,
+         doy_scaled_2 = doy_scaled^2,
+         peak_nbinom = peak_nbinom)
+
+max_count <- predict(model_nbinom_doy_iid_inlabru, 
+                      data = simulate_data_peak_nbinom, 
+                      formula = ~ exp(Intercept + doy_scaled + doy_scaled_2 + fjaar2017 + fjaar2018))
+
+overzicht_max_count <- overzicht_max_count %>%
+  bind_rows(max_count)
+```
+
+
+```{r}
+#Model 2
+
+#Model 2
+
+analyseset_soort_2 <- analyseset_soort %>%
+  mutate(loc_id = as.integer(factor(locatie)),
+         year_scaled = jaar -2016)
+
+n_loc <- n_distinct(analyseset_soort$locatie)
+
+trend_inlabru <- n_individuen ~ doy_scaled + doy_scaled_2 + year_scaled +
+site(map = loc_id, model = "iid", n = n_loc)
+
+model_nbinom_trend <- bru(trend_inlabru, data = analyseset_soort_2, family = "nbinomial")
+
+#gemiddelde jaarlijkse trend
+
+calc_trend <- function(x){
+ (exp(x) - 1) * 100
+}
+
+trend <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend = mean, trend_lcl = quant0.025, trend_ucl = quant0.975)
+
+overzicht_trend <- overzicht_trend %>%
+  bind_rows(trend)
+
+#totale trend over volledige periode 
+
+periode <- n_distinct(analyseset_soort$jaar)
+
+calc_trend_totaal <- function(x){
+ (exp(x * (periode - 1)) - 1) * 100
+}
+
+trend_totaal <- model_nbinom_trend$marginals.fixed$year_scaled %>%
+  inla.tmarginal(fun = calc_trend_totaal) %>%
+  inla.zmarginal(silent = TRUE) %>%
+  data.frame() %>%
+  mutate(soort = soort,
+         model = "trend_nbinom") %>%
+  select(soort, model, trend_tot = mean, trend_tot_lcl = quant0.025, trend_tot_ucl = quant0.975)
+
+overzicht_trend_totaal <- overzicht_trend_totaal %>%
+  bind_rows(trend_totaal)
+
+```
+
+
+```{r}
+
+waic_overview <- data.frame(
+  soort = soort,
+  model = "GLMM Nbinomial",
+  measure = "WAIC",
+  year_factor = model_nbinom_doy_iid_inlabru$waic$waic,
+  linear_trend = model_nbinom_trend$waic$waic) %>%
+  mutate(type_trend = ifelse((linear_trend - year_factor) > 2,
+                        "Niet lineair",
+                        ifelse((linear_trend - year_factor) > 0,
+                               "Quasi lineair", "Lineair")))
+
+overzicht_type_trend <- overzicht_type_trend %>%
+  bind_rows(waic_overview)
+
+
+```
+
+

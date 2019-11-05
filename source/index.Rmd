@@ -1,19 +1,32 @@
 ---
 title: "Voortgangsrapport soortenmeetnetten"
 author: 
-  - 
+  -
     name: "Toon Westra"
     email: "Toon.Westra@inbo.be"
-  - 
-    name: "Voornaam2 Achternaam2"
-    email: "voornaam2.achternaam2@inbo.be"
+  -
+    name: "Frederic Piesschaert"
+  -
+    name: "Thierry Onkelinx"
+  -
+    name: "Voornaam Naam" 
+  -
 subtitle: "Een stand van zaken na drie jaar monitoring"
 reportnr: "Hier komt de DOI van het rapport"
 ordernr: "Het optionele nummer van de opdrachtgever"
 link-citations: TRUE
+always_allow_html: yes
 bibliography: references.bib
 site: bookdown::bookdown_site
 output:
+  bookdown::word_document2:
+    toc: true
+  bookdown::html_document2:
+    keep_md: TRUE
+    toc: TRUE
+    toc_float:
+      collapsed: FALSE
+      smooth_scroll: FALSE
   bookdown::gitbook:
     split_by: "chapter+number"
     template: !expr INBOmd::inbo_rapport_css("html")
@@ -30,13 +43,14 @@ library(knitr)
 opts_chunk$set(
   echo = FALSE, 
   eval = TRUE,
-  cache = FALSE,
+  cache = TRUE,
   dpi = 300,
   fig.width = 150 / 25.4,
   fig.height = 100 / 25.4,
   warning = FALSE,
   error = TRUE,
-  message = FALSE
+  message = FALSE,
+  dev = 'png'
 )
 
 
@@ -51,21 +65,22 @@ theme_set(
     base_size = 12
   )
 )
-if (!interactive() && opts_knit$get("rmarkdown.pandoc.to") != "html") {
-  opts_chunk$set(dev = "cairo_pdf")
-  theme_set(
-    theme_inbo(
-      base_family = "Calibri", # "Flanders Art Sans",
-      base_size = 8
-    )
-  )
-}
+# if (!interactive() && opts_knit$get("rmarkdown.pandoc.to") != "html") {
+#   opts_chunk$set(dev = "cairo_pdf")
+#   theme_set(
+#     theme_inbo(
+#       base_family = "Calibri", # "Flanders Art Sans",
+#       base_size = 8
+#     )
+#   )
+# }
 
+doc.type <- knitr::opts_knit$get('rmarkdown.pandoc.to')
 
 ```
 
 
-```{r}
+```{r, cache = FALSE}
 
 library(sf)
 library(crosstalk)
@@ -73,6 +88,31 @@ library(leaflet)
 library(plotly)
 library(DT)
 library(googlesheets)
+library(effectclass)
+library(kableExtra)
+library(inlabru)
+library(INLA)
+library(webshot)
+library(flextable)
+library(pander)
+
 
 ```
 
+
+```{r banner, fig.width= 9, cache= FALSE, eval= FALSE}
+include_graphics("../images/emailbanner_meetnetten.jpg", dpi = 150)
+```
+
+
+
+# Dankwoord {-}
+
+We wensen in de eerste plaats alle vrijwilligers te bedanken voor de vele tellingen die ze hebben uitgevoerd voor de soortenmeetnetten. We willen ook Hannes Ledegen en Sam Van de Poel bedanken voor de coördinatie van de gegevensinzameling en hun inhoudelijke bijdrage aan de optimalisatie van het meetnetontwerp en de meetnettenapplicaties. De soortenexperts danken we voor hun waardevolle input: Geert De Knijf, Koen Van Den Berge, Jeroen Speybroeck, Dirk Maes, Wouter Van Landuyt, Arno Thomaes, Jo Packet, Koen Van Keer, Luc De bruyn. Ten slotte willen we ook de leden van de stuurgroep bedanken: Bernard Van Elegem, Veronique Verbist, Wouter Vanreusel, Marc Herremans, Koen Van Keer, Marc Pollet, Maurice Hoffman, Hannes Ledegen, Sam Van de Poel, Toon Westra.
+
+
+
+
+# Samenvatting {-}
+
+Samenvatting toevoegen.
