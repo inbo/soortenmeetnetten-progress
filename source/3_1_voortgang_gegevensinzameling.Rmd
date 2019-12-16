@@ -55,7 +55,7 @@ De Vleermuizenwerkgroep monitort al vele jaren vleermuizen via wintertellingen. 
 
 ## Inzet vrijwilligers
 
-Op basis van de ingevoerde bezoeken in [meetnetten.be](https://www.meetnetten.be), zien we dat sinds de opstart van de nieuwe soortenmeetnetten in 2016 al ongeveer 350 tellers (hoofdteller of medeteller) een telling uitvoerde. In totaal brachten deze tellers bijna 4700 bezoeken aan een van de meetnetlocaties.
+Op basis van de ingevoerde bezoeken in [meetnetten.be](https://www.meetnetten.be), zien we dat sinds de opstart van de nieuwe soortenmeetnetten in 2016 al ongeveer 350 tellers (hoofdteller of medeteller) een telling uitvoerde. In totaal brachten deze tellers bijna 4700 bezoeken aan de meetnetlocaties.
 
 Figuur \@ref(fig:bezoekenfiguur) geeft de evolutie van het aantal tellers en het aantal bezoeken. We zien een positieve evolutie in zowel het aantal tellers als het aantal bezoeken door de tellers. De daling bij de plantenmeetnetten is waarschijnlijk te verklaren doordat er met een meetcyclus van drie jaar wordt gewerkt. In het eerste jaar is er ruime keuze aan locaties die geteld moeten worden, maar in jaar 2 en 3 wordt het aanbod van de te tellen locaties kleiner en zal het dus ook moeilijker zijn om tellers te vinden.
 
@@ -110,8 +110,7 @@ tellers <- max(tellers_ind_overzicht$n_teller)
 
 Gemiddeld gezien voerde een teller `r mean_telling` tellingen uit in de periode 2016-2018. 
 
-De aantallen voor 2019 tonen we niet in Figuur \@ref(fig:bezoekenfiguur) omdat nog niet alle bezoeken van dat jaar werden ingevoerd. We vermelden ook dat niet alle bezoeken in kader van de soortenmeetnetten geregistreerd worden in meetnetten.be. Dit is het geval voor de inhaalslag van de Das en deels ook voor de plantenmeetnetten. 
-
+De aantallen voor 2019 tonen we niet in Figuur \@ref(fig:bezoekenfiguur) omdat nog niet alle bezoeken van dat jaar werden ingevoerd. We vermelden ook dat niet alle bezoeken in kader van de soortenmeetnetten geregistreerd worden in meetnetten.be. Dit is het geval voor de inhaalslag van de Das en de mollusken en deels ook voor de plantenmeetnetten. Daarnaast zijn er heel wat assisterende tellers, zoals bijvoorbeeld voor de eitellingen in het meetnet Gentiaanblauwtje. Deze assisterende tellers worden niet allemaal geregistreerd in [meetnetten.be](https://www.meetnetten.be).  
 
 
 ## Kwantiteit en kwaliteit van de ingezamelde gegevens
@@ -254,7 +253,7 @@ include_graphics("../data/dummy_figuur.png")
 
 ### Overige soorten
 
-Zoals vermeld in paragraaf \@ref(h:welkesoorten) kunnen vrijwilligers, naast tellingen voor de doelsoort(de soort waarvoor het meetnet ontworpen werd), ook optioneel tellingen ingeven voor andere soorten uit de soortgroep van de doelsoort die via hetzelfde veldprotocol geteld kunnen worden. Voor drie soortgroepen werden er al tellingen ingevoerd voor overige soorten: dagvlinders, amfibieën en libellen. Bijlage \@ref(h:bijlageb) geeft het aantal ingevoerde tellingen per soort, gerangschikt van hoog naar laag. De tabel bevat ook soorten die een doelsoort zijn van een bepaald meetnet. In deze gevallen gaat het om tellingen in een ander meetnet dan in het meetnet van de doelsoort. Dus bijvoorbeeld een telling van Oranje zandoogje in het meetnet Heivlinder.
+Zoals vermeld in paragraaf \@ref(h:welkesoorten) kunnen vrijwilligers, naast tellingen voor de doelsoort(de soort waarvoor het meetnet ontworpen werd), ook optioneel tellingen ingeven voor andere soorten uit de soortgroep van de doelsoort die via hetzelfde veldprotocol geteld kunnen worden. Voor volgende soortgroepen werden er al tellingen ingevoerd voor overige soorten: dagvlinders, amfibieën, libellen en sprinkhanen. Bijlage \@ref(h:bijlageb) geeft het aantal ingevoerde tellingen per soort, gerangschikt van hoog naar laag. De tabel bevat ook soorten die een doelsoort zijn van een bepaald meetnet. In deze gevallen gaat het om tellingen in een ander meetnet dan in het meetnet van de doelsoort. Dus bijvoorbeeld een telling van Oranje zandoogje in het meetnet Heivlinder.
 
 
 ## Bijsturing monitoringsprotocollen

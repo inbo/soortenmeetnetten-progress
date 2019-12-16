@@ -1,6 +1,6 @@
 # Gegevensanalyse {#h:gegevensanalyse}
 
-De manier waarop de gegevens van de soortenmeetnetten geanalyseerd worden kan sterk variëren afhankelijk van het gebruikte veldprotocol. Het veldprotocol bepaalt immers het type dataset dat bekomen wordt. We zullen dus moeten gebruik maken van verschillende analysemodellen voor de gegevensanalyse. De manier waarop we de resultaten presenteren van de analyse willen we echter zoveel mogelijk uniformiseren. We illustreren dit aan de hand van de analyseresultaten van enkele libellenmeetnetten dia via het veldprotocol 'gebiedstelling' geteld worden. We geven eerst een korte beschrijving van het analysemodel dat hiervoor gebruikt wordt.  
+De manier waarop de gegevens van de soortenmeetnetten geanalyseerd worden kan sterk variëren afhankelijk van het gebruikte veldprotocol. Het veldprotocol bepaalt immers het type dataset dat bekomen wordt. We zullen dus moeten gebruik maken van verschillende analysemodellen voor de gegevensanalyse. De manier waarop we de resultaten presenteren van de analyse willen we echter zoveel mogelijk uniformiseren. We illustreren dit aan de hand van de analyseresultaten van enkele libellenmeetnetten die via het veldprotocol 'gebiedstelling' geteld worden. We geven eerst een korte beschrijving van het analysemodel dat hiervoor gebruikt wordt.  
 
 ## Beschrijving analyse gebiedstelling libellen
 
@@ -64,16 +64,18 @@ doy_year_effect <- doy_year_effect %>%
   
 doy_year_loc_effect_2 <- doy_year_loc_effect %>%
   left_join(observed_counts, by = c("jaar", "loc_id", "doy_scaled")) %>%
-  left_join(doy_year_effect, by = c("jaar", "doy_scaled"))
+  left_join(doy_year_effect, by = c("jaar", "doy_scaled")) %>%
+  mutate(Datum = as.Date(doy, origin = "2016-01-01"))
 
-ggplot(data = doy_year_loc_effect_2, aes(x = doy)) + 
+ggplot(data = doy_year_loc_effect_2, aes(x = Datum)) + 
   geom_line(aes(y = mean, group = loc_id, colour = factor(loc_id)), linetype = 2 ) +
   geom_point(aes(y = y_obs), alpha = 0.5, size = 1) +
   geom_line(aes(y = mean_year), size = 1, colour = "black") +
   geom_ribbon(aes(ymin = lci_year, ymax = uci_year), alpha = 0.3) +
   facet_wrap(~jaar) +
   theme(legend.position = "none") +
-  labs(x = "Dagnummer", y = "Aantal")
+  labs(y = "Aantal") +
+  scale_x_date(date_labels = "%d %b")
 ```
 
 
@@ -81,7 +83,7 @@ Op basis van dit model maken we een schatting van:
 
 * de jaarlijkse index: het verschil tussen een bepaald jaar en een referentiejaar;
 
-* de maximale telling binnen het telseizoen per jaar.
+* de gemiddelde maximale telling binnen het telseizoen per jaar.
 
 ### Model voor lineaire trend
 
@@ -142,7 +144,7 @@ ggplot(trend_klasses, aes(x = klasse_naam, y = trend, ymin = lcl, ymax = ucl)) +
   stat_effect(threshold = c(-0.25, 0.33), reference = 0, size = 3) +
   scale_effect() +
   scale_y_continuous(labels = scales::percent, breaks = c(-1, -0.5, -0.25, 0, 0.33, 1)) +
-  labs(x= "beschrijving klasse", y = "verschil/trend") +
+  labs(x= "Beschrijving klasse", y = "Verschil/trend", shape = "Classificatie") +
   coord_flip()
 
 ```
@@ -196,7 +198,7 @@ Figuur \@ref(fig:figmax) toont de moddelschatting en betrouwbaarheidsinterval vo
 ggplot(overzicht_max_count, aes(x = jaar, y = mean, ymin = q0.025, ymax = q0.975)) +
   geom_point() + 
   geom_errorbar(width = 0.1) +
-  geom_line( colour = "blue", linetype = 2) +
+  geom_line( colour = inbo.steun.blauw, linetype = 2) +
   #geom_ribbon(alpha = 0.2) + 
   labs(y = "Maximum aantal") +
   scale_x_continuous(breaks = c(2016, 2017, 2018)) +
@@ -217,7 +219,7 @@ overzicht_index_2016 %>%
   geom_point() +
   geom_errorbar(width = 0.1) +
   geom_hline(yintercept = 1, linetype = 3) +
-  geom_line( colour = "blue", linetype = 2) +
+  geom_line( colour = inbo.steun.blauw, linetype = 2) +
   #geom_ribbon(alpha = 0.2) + 
   labs(y = "Jaarlijkse index (2016 = 100)", x = "Jaar") +
   scale_x_continuous(breaks= c(2017, 2018)) +
@@ -229,7 +231,7 @@ overzicht_index_2016 %>%
 
 ### Verschillen tussen de jaren
 
-Ook andere jaren kunnen als referentiejaar gebruikt worden. Om alle combinaties te visualiseren stellen we \@ref(fig:indexcomb) voor met in de y-as het referentiejaar en in de x-as het jaar dat vergeleken wordt met het referentiejaar. De symbolen tonen het type verschillen tussen de jaren volgens het classificatiesysteem in Figuur  \@ref(fig:figtrend) en Tabel \@ref(tab:tabelklasse). De kleur geeft de richting en de grootte van de verandering aan. We zien bijvoorbeeld voor de Gevlekte witsnuitlibel in 2018 een sterke toename t.o.v. 2017. Dit wordt weergegeven via een blauw gearceerde driehoek. Als we 2017 vergelijken t.o.v. 2018 als referentiejaar, dan krijgen we uiteraard hetzelfde resultaat maar dan in de andere richting.     
+Ook andere jaren kunnen als referentiejaar gebruikt worden. Om alle combinaties te visualiseren stellen we Figuur \@ref(fig:indexcomb) voor met in de y-as het referentiejaar en in de x-as het jaar dat vergeleken wordt met het referentiejaar. De symbolen tonen het type verschillen tussen de jaren volgens het classificatiesysteem in Figuur  \@ref(fig:figtrend) en Tabel \@ref(tab:tabelklasse). Een gearceerde driehoek (**) kan dus zowel een sterke toename (++) als een sterke afname (--) betekenen. De kleur geeft de richting en de grootte van de verandering aan. We zien bijvoorbeeld voor de Gevlekte witsnuitlibel in 2018 een sterke toename t.o.v. 2017. Dit wordt weergegeven via een blauw gearceerde driehoek. Als we 2017 vergelijken t.o.v. 2018 als referentiejaar, dan krijgen we uiteraard hetzelfde resultaat maar dan in de andere richting (een oranje gearceerde driehoek).     
 
 ```{r indexcomb, fig.width= 9, fig.height= 3, fig.cap = "Verschillen tussen de jaren voor Gevlekte witsnuitlibel, Kempense heidelibel en Maanwaterjuffer, met in de y-as het referentiejaar en in de y-as het jaar dat vergelijken wordt met het referentiejaar"}
 
@@ -240,11 +242,11 @@ overzicht_compare_years %>%
   ggplot(aes(y = from, x = to, ymin = `0.025quant`, ymax =`0.975quant`, colour = mean)) +
   stat_effect(threshold = log(0.75), size = 3) +
   coord_fixed() +
-  scale_colour_gradient2("verandering", breaks = breaks, labels = sprintf("%+.0f%%", labels), low = "red", high = "blue") +
+  scale_colour_gradient2("Verandering", breaks = breaks, labels = sprintf("%+.0f%%", labels), low = inbo.oranje, high = inbo.steun.blauw) +
   scale_effect() +
   scale_y_continuous(breaks = c(2016, 2017, 2018)) +
   scale_x_continuous(breaks = c(2016, 2017, 2018)) +
-  labs(y = "Referentiejaar", x = "Jaar") +
+  labs(y = "Referentiejaar", x = "Jaar", shape = "Classificatie") +
   theme(legend.key.size = unit(0.8, "lines")) +
   facet_wrap(~ soort, ncol = 3)
   
@@ -260,7 +262,7 @@ treshold_low <- round((exp(log(0.75)/2) - 1) *100, 1)
 treshold_high <- round((exp(log(1.33)/2) - 1) *100, 1)
 ```
 
-Figuur \@ref(fig:figtrend-resultaat) toont de gemiddelde jaarlijkse trend over de periode 2016-2018. Om het type trend te bepalen gebruiken we hier een jaarlijkse trend van  `r treshold_low`% als onderste  drempelwaarde en van `r treshold_high` % als bovenste drempelwaarde. Over de volledige trendperiode (3 jaar) komt dit overeen met een respectievelijk een afname van -25% en een toename van +33%
+Figuur \@ref(fig:figtrend-resultaat) toont de gemiddelde jaarlijkse trend over de periode 2016-2018. Om het type trend te bepalen gebruiken we hier een jaarlijkse trend van  `r treshold_low`% als onderste  drempelwaarde en van `r treshold_high` % als bovenste drempelwaarde. Beide drempelwaarden komen overeen met eenzelfde relatief effect: (100 - `r treshold_low`)/100 = 100/(100 + `r treshold_high`). Over de volledige trendperiode (3 jaar) komt dit overeen met een respectievelijk een afname van -25% en een toename van +33%
 
 ```{r figtrend-resultaat, fig.width = 6, fig.height= 3, fig.cap= "Gemiddelde jaarlijkse trend over de periode 2016-2018 voor Gevlekte witsnuitlibel, Kempense heidelibel en Maanwaterjuffer"}
 
@@ -269,14 +271,14 @@ ggplot(overzicht_trend, aes(x = soort, y = trend/100, ymin = trend_lcl/100, ymax
   geom_errorbar(width = 0.5) +
   stat_effect(threshold = c(treshold_low/100, treshold_high/100), reference = 0, size = 3) +
   scale_effect() +
-  labs(y = "Gemiddelde jaarlijkse trend (%)", x = "Soort") +
+  labs(y = "Gemiddelde jaarlijkse trend (%)", x = "Soort", shape = "Classificatie") +
   scale_y_continuous(breaks = c(-50, -25, 0, 33, 100)/100, labels = scales::percent) +
  # theme(axis.text.x = element_text(angle = 90)) +
   coord_flip()
 
 ```
 
-In Tabel \@ref(tab:tabtrendresultaat) geven we een overzicht van de jaarlijkse trends en duiden we ook aan of de trend al dan niet lineair is. 
+In Tabel \@ref(tab:tabtrendresultaat) geven we een overzicht van de jaarlijkse trends en duiden we ook aan of de trend al dan niet lineair is. Een lineaire trend betekent dat de jaarlijkse daling of stijging relatief constant is. Bij een niet-lineaire trend fluctueren de aantallen sterk jaar per jaar, maar hebben we gemiddeld gezien over de hele tijdsperiode wel een stijging of een daling. Het onderscheid tussen een lineaire en een niet-lineaire trend maken we op basis van de WAIC, een maat die aangeeft in hoeverre het model overeenkomt met de data (de *model fit*). Hoe lager de WAIC, hoe beter de model fit. Als het model voor de lineaire trend een lagere WAIC heeft dan het model voor het verschil tusssen de jaren, gaan we uit van een lineaire trend. In het andere geval gaan we dus uit van een niet-lineaire trend. 
 
 ```{r tabtrendresultaat}
 

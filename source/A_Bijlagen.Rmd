@@ -2,8 +2,9 @@
 # (APPENDIX) Bijlagen {-} 
 
 
-# Overzicht soorten {#h:bijlage}
+# Overzicht Europese en Vlaams prioritaire soorten {#h:bijlage}
 
+Onderstaande tabel geeft een overzicht van de Europese en Vlaams prioritaire soorten, de wijze waarop ze gemonitord worden en de status van de monitoring (indien een soort via een meetnet of een inhaalslag gemonitord wordt).
 
 ```{r, cache = FALSE}
 
@@ -48,6 +49,8 @@ if(doc.type == "html"){
 ```
 
 # Overzicht tellingen van overige soorten {#h:bijlageb}
+
+In een deel van de soortenmeetnetten kunnen naast de doelsoort (de soort in functie waarvan het meetnet werd ontworpen), ook andere soorten binnen de soortgroep geteld worden en ingevoerd worden in [meetnetten.be](https://www.meetnetten.be). Onderstaande tabel geeft een overzicht van het aantal tellingen van deze overige soorten. Merk op dat er in deze tabel ook soorten voorkomen waarvoor een meetnet bestaat, maar het gaat dan steeds om tellingen die in een ander meetnet werden uitgevoerd. Zo worden er bijvoorbeeld Kamsalamanderlarven geteld in het Boomkikker meetnet.   
 
 ```{r}
 
@@ -108,32 +111,37 @@ if(doc.type == "html") {
 
 ## Selectie ruwe data
 
-We selecteren de tellingen van het meetnet Maanwaterjuffer, Kempense heidelibel en Gevlekte witsnuitlibel voor de periode 2016-2018. Locaties waar de soort niet werd waargenomen in deze periode, nemen we echter niet mee in de analyse. We selecteren ook enkel tellingen van locaties die in minstens twee jaren werden geteld. 
+We selecteren de tellingen van het meetnet Maanwaterjuffer, Kempense heidelibel en Gevlekte witsnuitlibel voor de periode 2016-2018. In principe worden de locaties van deze meetnetten jaarlijks geteld. Locaties waar de soort geen enkele keer werd waargenomen in deze periode, nemen we niet mee in de analyse. We selecteren ook enkel tellingen van locaties die in minstens twee (van de drie) jaren werden geteld. 
+
+## Herschaling van de data
+
+Om tot een goede schatting van modelparameters te komen, moeten we het dagnummer in het jaar waarop de telling is uitgevoerd herschalen en centreren. Dit doen we op basis van het dagnummer dat in midden van de telperiode ligt ($dagnr_{mid}$):
+$$D = \frac{dagnr - dagnr_{mid}}{28}$$
 
 ## Model voor verschillen tussen de jaren
 
-We maken gebruik van een generalised linear model (GLMM), waarbij we aannemen dat het getelde aantal $Aantal_{ldj}$ op locatie $l$, dag $d$ en jaar $j$ een negatief binomiale distributie volgt met gemiddelde $\mu_{ldj}$ en overdispersie parameter $k$.
+We maken gebruik van een generalised linear mixed model (GLMM), waarbij we aannemen dat het getelde aantal $C_{ldj}$ op locatie $l$, dag $d$ en jaar $j$ een negatief binomiale distributie volgt met gemiddelde $\mu_{ldj}$ en overdispersie parameter $k$.
 
-$$Aantal_{ldj} \sim {NB}(\mu_{ldj}, k)$$
+$$C_{ldj} \sim {NB}(\mu_{ldj}, k)$$
 
-$$E(Aantal_{ldj})=\mu_{ldj}$$
+$$E(C_{ldj})=\mu_{ldj}$$
 $$var(C_{ldj})=\mu_{ldj}+\frac{\mu_{ldj}^2}{k}$$
 We maken gebruik van  onderstaande link functie.
 
 $$\log(\mu_{ldj}) = \eta_{ldj}$$
-De verklarende variabelen zijn jaar (als categorische variabele) $fJaar_{j}$, het dagnummer binnen een jaar $Dag_{d}$ en het kwadraat van het dagnummer $Dag_{d}^2$:    
+De verklarende variabelen zijn jaar (als categorische variabele) $J_{j}$, het herschaalde dagnummer binnen een jaar $D_{d}$ en het kwadraat van het herschaalde dagnummer $D_{d}^2$:    
 
-$$\eta_{ldj}= B_{0} + B_{1}fJaar_{j} + B_{2}Dag_{d} + B_{3}Dag_{d}^2 + a_{l}$$
- $a_{l}$ is een random intercept voor locatie $l$. Het volgt een normale distributie met gemiddelde 0 en variantie $\sigma_{l}^2$:  
+$$\eta_{ldj}= \beta_{0} + \beta_{j}J_{j} + \beta_{1}D_{d} + \beta_{2}D_{d}^2 + b_{l}$$
+ $b_{l}$ is een random intercept voor locatie $l$. Het volgt een normale distributie met gemiddelde 0 en variantie $\sigma_{l}^2$:  
  
-$$a_{l} \sim {N(0,\sigma_{l}^2)} $$
+$$b_{l} \sim {N(0,\sigma_{l}^2)} $$
 
 ## Model voor jaarlijkse trend
 
-In dit model gebruiken we jaar als continue variabele $Jaar_{j}$. Verder is het model identiek aan het model voor verschillen tussen de jaren. We krijgen dus:
+In dit model gebruiken we jaar als continue variabele $J$. Verder is het model identiek aan het model voor verschillen tussen de jaren. We krijgen dus:
 
-$$\eta_{ldj}= B_{0} + B_{1}Jaar_{j} + B_{2}Dag_{d} + B_{3}Dag_{d}^2 + a_{l}$$
-waarbij $B_{1}$ de gemiddelde jaarlijkse trend weergeeft (in de logschaal). 
+$$\eta_{ldj}= \beta_{0} + \beta_{1}J + \beta_{2}D_{d} + \beta_{3}D_{d}^2 + b_{l}$$
+waarbij $e^{\beta_1}$ de relatieve trend weergeeft. 
 
 
 
