@@ -211,7 +211,7 @@ bscols(
     bscols(widths = c(7, 5),
     leaflet(locaties_shared, options = leafletOptions(maxZoom = 9)) %>%
       addTiles() %>%
-      addCircleMarkers(radius = 0.5, opacity = 0.6, label = ~meetnet),
+      addCircleMarkers(radius = 1, color = inbo.groen, opacity = 0.4, fillOpacity = 0.4,  label = ~meetnet),
     plot_ly(locaties_shared, x = ~Jaar) %>% 
       add_histogram(color = ~Kleur, colors = inbo.groen) %>%
       layout(legend = list(x = 100, y = 0.5))
@@ -264,15 +264,13 @@ Op basis van de jaarlijkse evaluatie van de gegevensinzameling, werden voor vers
 
 Het gaat om volgende rapporten:
 
-* Amfibieën (ref toevoegen Speybroeck et al. 2019)
-* Dagvlinders (ref toevoegen Maes et al. 2019)
-* Libellen (ref toevoegen De Knijf et al. 2019)
-* Planten (ref toevoegen Van Landuyt et al. 2019)
-* Zoogdieren (ref toevoegen Van Den Berge et al. 2019)
-* Kevers (ref toevoegen Thomaes et al. 2019)
-* Spinnen (ref toevoegen Van Keer et al. 2019)
+* Dagvlinders [@Maes2019]
+* Libellen [@DeKnijf2019b]
+* Planten [@VanLanduyt2019]
+* Zoogdieren [@VanDenBerge2019]
+* Kevers [@Thomaes2019]
 
-
+De updates voor de monitoringsprotocollen voor amfibieën en spinnen worden begin 2020 verwacht.
 
 
 

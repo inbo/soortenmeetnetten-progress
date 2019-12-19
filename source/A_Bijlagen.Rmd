@@ -4,7 +4,7 @@
 
 # Overzicht Europese en Vlaams prioritaire soorten {#h:bijlage}
 
-Onderstaande tabel geeft een overzicht van de Europese en Vlaams prioritaire soorten, de wijze waarop ze gemonitord worden en de status van de monitoring (indien een soort via een meetnet of een inhaalslag gemonitord wordt).
+Onderstaande tabel geeft een overzicht van de Europese en Vlaams prioritaire soorten (uitgezonder de vogels), de wijze waarop ze gemonitord worden en de status van de monitoring (indien een soort via een meetnet of een inhaalslag gemonitord wordt). Nieuwe soorten t.o.v. de blauwdrukken [@DeKnijf2014] worden in het vet aangeduid.
 
 ```{r, cache = FALSE}
 
@@ -47,6 +47,7 @@ if(doc.type == "html"){
 
   
 ```
+* de wintertellingen van de vleermuizen door vrijwilligers is een lang lopend meetnet, maar gebeurt nog niet in samenwerking met INBO in kader van de soortenmeetnetten
 
 # Overzicht tellingen van overige soorten {#h:bijlageb}
 

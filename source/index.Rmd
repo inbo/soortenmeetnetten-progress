@@ -2,21 +2,16 @@
 title: "Voortgangsrapport soortenmeetnetten"
 author: 
   -
-    name: "Toon Westra"
+    name: "Toon Westra, Frederic Piesschaert, Thierry Onkelinx en Hannes Ledegen"
     email: "Toon.Westra@inbo.be"
   -
-    name: "Frederic Piesschaert"
-  -
-    name: "Thierry Onkelinx"
-  -
-    name: "Voornaam Naam" 
-  -
+
 subtitle: "Een stand van zaken na drie jaar monitoring"
 reportnr: "Hier komt de DOI van het rapport"
-ordernr: "Het optionele nummer van de opdrachtgever"
 link-citations: TRUE
 always_allow_html: yes
 bibliography: references.bib
+csl: methods-in-ecology-and-evolution.csl
 site: bookdown::bookdown_site
 output:
   bookdown::word_document2:
@@ -108,11 +103,23 @@ include_graphics("../images/emailbanner_meetnetten.jpg", dpi = 150)
 
 # Dankwoord {-}
 
-We wensen in de eerste plaats alle vrijwilligers te bedanken voor de vele tellingen die ze hebben uitgevoerd voor de soortenmeetnetten. We willen ook Hannes Ledegen en Sam Van de Poel bedanken voor de coördinatie van de gegevensinzameling en hun inhoudelijke bijdrage aan de optimalisatie van het meetnetontwerp en de meetnettenapplicaties. De soortenexperts danken we voor hun waardevolle input: Geert De Knijf, Koen Van Den Berge, Jeroen Speybroeck, Dirk Maes, Wouter Van Landuyt, Arno Thomaes, Jo Packet, Koen Van Keer, Luc De bruyn. Ten slotte willen we ook de leden van de stuurgroep bedanken: Bernard Van Elegem, Veronique Verbist, Wouter Vanreusel, Marc Herremans, Koen Van Keer, Marc Pollet, Maurice Hoffman, Hannes Ledegen, Sam Van de Poel, Toon Westra.
-
-
+We wensen in de eerste plaats alle vrijwilligers te bedanken voor de vele tellingen die ze hebben uitgevoerd voor de soortenmeetnetten. We willen ook Hannes Ledegen en Sam Van de Poel bedanken voor de coördinatie van de gegevensinzameling en hun inhoudelijke bijdrage aan de optimalisatie van het meetnetontwerp en de meetnettenapplicaties. De soortenexperts danken we voor hun waardevolle input: Geert De Knijf, Koen Van Den Berge, Jeroen Speybroeck, Dirk Maes, Wouter Van Landuyt, Arno Thomaes, Jo Packet, Koen Van Keer, Luc De bruyn, Roosmarijn Steeman en Goedele Verbeylen. Ten slotte willen we ook de leden van de stuurgroep bedanken: Bernard Van Elegem, Veronique Verbist, Wouter Vanreusel, Marc Herremans, Koen Van Keer, Marc Pollet, Maurice Hoffman, Hannes Ledegen, Sam Van de Poel, Toon Westra.
 
 
 # Samenvatting {-}
 
-Samenvatting toevoegen.
+In de periode 2016-2018 startte het Instituut voor Natuur- en Bosonderzoek (INBO) in samenwerking met Natuurpunt Studie met een reeks nieuwe meetnetten voor de monitoring van 65 Vlaamse en Europees prioritaire soorten. Elk meetnet bestaat uit een aantal vooraf vastgelegde locaties, waar een of meerdere soorten via een gestandaardiseerde methode geteld worden. Voor het uitvoeren van die tellingen doen we beroep op citizen-science: vrijwilligers kunnen meetnetlocaties selecteren en de getelde aantallen invoeren in [meetnetten.be](https://www.meetnetten.be). Na drie jaar monitoring kunnen we besluiten dat dit een succesvolle aanpak is. De vooropgestelde doelen voor het aantal te tellen locaties per meetnet werden grotendeels gehaald. In totaal voerden de vrijwilligers ongeveer 4700 tellingen in in [meetnetten.be](https://www.meetnetten.be). 
+
+Ook op vlak van databeheer, gegevensanalyse en rapportering hebben we heel wat stappen vooruit gezet. Voor de meeste meetnetten is er nu een invoerscherm beschikbaar op [meetnetten.be](https://www.meetnetten.be) waar telgegevens ingevoerd kunnen worden. Daarnaast werden er ook apps ontwikkeld voor de mobiele invoer van telgegevens. De ontsluiting van de meetnetten-data zal gebeuren via een datawarehouse en via publicatie van de dataset op GBIF (Global Biodiversity Information Facility). We zijn ook al van start gegaan met het analyseren van trends en we werkten een systeem uit om deze trends op een consistente en bevattelijke manier voor te stellen. Ten slotte hebben we ook een communicatieplan uitgewerkt voor de toekomstige rapportering van de monitoringsresultaten.          
+
+# English abstract {-}
+
+\benglish
+Since 2016 the Research Institute for Nature and Forests (INBO) and Natuurpunt Studie initiated a set of new monitoring schemes for 65 Flemish an European priority species. Each monitoring scheme consists of a fixed set of locations in which one ore more species are counted based on a standardized protocol. We follow a citizen-science approach: volunteers can select locations and import their counts in the web-portal [meetnetten.be](https://www.meetnetten.be). After three years of monitoring we can conclude that this is a successful approach. The targets for the number of locations to be counted, were achieved for almost all monitoring schemes. In total volunteers imported approximately 4700 counts in [meetnetten.be](https://www.meetnetten.be). 
+
+Progress was also made for data management, data analysis and reporting. For most monitoring schemes count data can be imported in [meetnetten.be](https://www.meetnetten.be). But we also developed apps for mobile import of count data. Data will be made accessible through a datawarehouse and through publication on GBIF (Global Biodiversity Information Facility). We also started with the analysis of population trends and developed an approach to present trends in a consistent and comprehensible way. Finally we also created a communication plan for reporting monitoring results.        
+
+
+\eenglish
+
+
