@@ -45,7 +45,7 @@ if(doc.type == "html"){
 ```
 
 ```{r opstartfig-dummy, fig.cap= "Overzicht van de opgestarte meetnetten en inhaalsagen in de periode 2016-2018"}
-include_graphics("../data/dummy_figuur.png")
+include_graphics("../images/dummy_figuur.png")
 ```
 
 
@@ -248,7 +248,7 @@ bscols(
 ```
 
 ```{r telfig-dummy, fig.cap= "Overzicht van de tellingen in de periode 2016-2018"}
-include_graphics("../data/dummy_figuur.png")
+include_graphics("../images/dummy_figuur.png")
 ```
 
 ### Overige soorten
