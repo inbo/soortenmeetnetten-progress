@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html >
+
+<head>
+
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>C Technische beschrijving analysemodel libellen-gebiedstelling | Voortgangsrapport soortenmeetnetten</title>
+  <meta name="description" content="C Technische beschrijving analysemodel libellen-gebiedstelling | Voortgangsrapport soortenmeetnetten">
+  <meta name="generator" content="bookdown  and GitBook 2.6.7">
+
+  <meta property="og:title" content="C Technische beschrijving analysemodel libellen-gebiedstelling | Voortgangsrapport soortenmeetnetten" />
+  <meta property="og:type" content="book" />
+  
+  
+  
+  
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="C Technische beschrijving analysemodel libellen-gebiedstelling | Voortgangsrapport soortenmeetnetten" />
+  
+  
+  
+
+<meta name="author" content="">
+
+
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  
+  
+<link rel="prev" href="B-h-bijlageb.html"/>
+<link rel="next" href="referenties.html"/>
+<script src="libs/jquery-2.2.3/jquery.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+
+
+
+
+
+
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="libs/bootstrap-3.3.2/css/bootstrap.min.css" rel="stylesheet" />
+<script src="libs/bootstrap-3.3.2/js/bootstrap.min.js"></script>
+<link href="libs/crosstalk-1.0.1/css/crosstalk.css" rel="stylesheet" />
+<script src="libs/crosstalk-1.0.1/js/crosstalk.min.js"></script>
+<script src="libs/htmlwidgets-1.3/htmlwidgets.js"></script>
+<script src="libs/plotly-binding-4.9.0/plotly.js"></script>
+<script src="libs/typedarray-0.1/typedarray.min.js"></script>
+<link href="libs/plotly-htmlwidgets-css-1.46.1/plotly-htmlwidgets.css" rel="stylesheet" />
+<script src="libs/plotly-main-1.46.1/plotly-latest.min.js"></script>
+<link href="libs/selectize-0.12.0/selectize.bootstrap3.css" rel="stylesheet" />
+<script src="libs/selectize-0.12.0/selectize.min.js"></script>
+<link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-1.3.1/leaflet.js"></script>
+<link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+<script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+<script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+<link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+<script src="libs/leaflet-binding-2.0.2/leaflet.js"></script>
+<link href="libs/leaflet-easybutton-1.3.1/easy-button.css" rel="stylesheet" />
+<script src="libs/leaflet-easybutton-1.3.1/easy-button.js"></script>
+<script src="libs/leaflet-easybutton-1.3.1/EasyButton-binding.js"></script>
+<link href="libs/leaflet-locationfilter2-0.1.1/locationfilter.css" rel="stylesheet" />
+<script src="libs/leaflet-locationfilter2-0.1.1/locationfilter.js"></script>
+<script src="libs/leaflet-locationfilter2-0.1.1/locationfilter-bindings.js"></script>
+<link href="libs/ionicons-2.0.1/ionicons.min.css" rel="stylesheet" />
+<script src="libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="libs/datatables-css-0.0.0/datatables-crosstalk.css" rel="stylesheet" />
+<script src="libs/datatables-binding-0.8/datatables.js"></script>
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.min.css" rel="stylesheet" />
+<link href="libs/dt-core-1.10.16/css/jquery.dataTables.extra.css" rel="stylesheet" />
+<script src="libs/dt-core-1.10.16/js/jquery.dataTables.min.js"></script>
+<link href="libs/nouislider-7.0.10/jquery.nouislider.min.css" rel="stylesheet" />
+<script src="libs/nouislider-7.0.10/jquery.nouislider.min.js"></script>
+
+
+
+<link rel="stylesheet" href="css/inbo_rapport.css" type="text/css"/>
+
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li class="chapter" data-level="" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i>Dankwoord</a></li>
+<li class="chapter" data-level="" data-path="samenvatting.html"><a href="samenvatting.html"><i class="fa fa-check"></i>Samenvatting</a></li>
+<li class="chapter" data-level="" data-path="english-abstract.html"><a href="english-abstract.html"><i class="fa fa-check"></i>English abstract</a></li>
+<li class="chapter" data-level="1" data-path="1-inleiding.html"><a href="1-inleiding.html"><i class="fa fa-check"></i><b>1</b> Inleiding</a></li>
+<li class="chapter" data-level="2" data-path="2-h-doel.html"><a href="2-h-doel.html"><i class="fa fa-check"></i><b>2</b> Doel soortenmeetnetten</a><ul>
+<li class="chapter" data-level="2.1" data-path="2-h-doel.html"><a href="2-h-doel.html#h:welkesoorten"><i class="fa fa-check"></i><b>2.1</b> Welke soorten monitoren we via een meetnet</a></li>
+<li class="chapter" data-level="2.2" data-path="2-h-doel.html"><a href="2-h-doel.html#welke-informatie-halen-we-uit-de-meetnetten"><i class="fa fa-check"></i><b>2.2</b> Welke informatie halen we uit de meetnetten</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html"><i class="fa fa-check"></i><b>3</b> Gegevensinzameling</a><ul>
+<li class="chapter" data-level="3.1" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#opgestarte-meetnetten"><i class="fa fa-check"></i><b>3.1</b> Opgestarte meetnetten</a></li>
+<li class="chapter" data-level="3.2" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#inzet-vrijwilligers"><i class="fa fa-check"></i><b>3.2</b> Inzet vrijwilligers</a></li>
+<li class="chapter" data-level="3.3" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#kwantiteit-en-kwaliteit-van-de-ingezamelde-gegevens"><i class="fa fa-check"></i><b>3.3</b> Kwantiteit en kwaliteit van de ingezamelde gegevens</a><ul>
+<li class="chapter" data-level="3.3.1" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#doelsoorten"><i class="fa fa-check"></i><b>3.3.1</b> Doelsoorten</a></li>
+<li class="chapter" data-level="3.3.2" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#overige-soorten"><i class="fa fa-check"></i><b>3.3.2</b> Overige soorten</a></li>
+</ul></li>
+<li class="chapter" data-level="3.4" data-path="3-h-gegevensinzameling.html"><a href="3-h-gegevensinzameling.html#bijsturing-monitoringsprotocollen"><i class="fa fa-check"></i><b>3.4</b> Bijsturing monitoringsprotocollen</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="4-h-dataontsluiting.html"><a href="4-h-dataontsluiting.html"><i class="fa fa-check"></i><b>4</b> Databeheer</a><ul>
+<li class="chapter" data-level="4.1" data-path="4-h-dataontsluiting.html"><a href="4-h-dataontsluiting.html#applicaties"><i class="fa fa-check"></i><b>4.1</b> Applicaties</a></li>
+<li class="chapter" data-level="4.2" data-path="4-h-dataontsluiting.html"><a href="4-h-dataontsluiting.html#databanken"><i class="fa fa-check"></i><b>4.2</b> Databanken</a></li>
+<li class="chapter" data-level="4.3" data-path="4-h-dataontsluiting.html"><a href="4-h-dataontsluiting.html#data-ontsluiting-via-gbif"><i class="fa fa-check"></i><b>4.3</b> Data-ontsluiting via GBIF</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html"><i class="fa fa-check"></i><b>5</b> Gegevensanalyse</a><ul>
+<li class="chapter" data-level="5.1" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#beschrijving-analyse-gebiedstelling-libellen"><i class="fa fa-check"></i><b>5.1</b> Beschrijving analyse gebiedstelling libellen</a><ul>
+<li class="chapter" data-level="5.1.1" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#model-voor-verschillen-tussen-de-jaren"><i class="fa fa-check"></i><b>5.1.1</b> Model voor verschillen tussen de jaren</a></li>
+<li class="chapter" data-level="5.1.2" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#model-voor-lineaire-trend"><i class="fa fa-check"></i><b>5.1.2</b> Model voor lineaire trend</a></li>
+</ul></li>
+<li class="chapter" data-level="5.2" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#h:classtrend"><i class="fa fa-check"></i><b>5.2</b> Interpretatie van trends/verschillen</a></li>
+<li class="chapter" data-level="5.3" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#voorstelling-resultaten"><i class="fa fa-check"></i><b>5.3</b> Voorstelling resultaten</a><ul>
+<li class="chapter" data-level="5.3.1" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#modelschatting-voor-maximum-getelde-aantal-per-jaar"><i class="fa fa-check"></i><b>5.3.1</b> Modelschatting voor maximum (getelde) aantal per jaar</a></li>
+<li class="chapter" data-level="5.3.2" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#jaarlijkse-index-met-2016-als-referentiejaar"><i class="fa fa-check"></i><b>5.3.2</b> Jaarlijkse index met 2016 als referentiejaar</a></li>
+<li class="chapter" data-level="5.3.3" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#verschillen-tussen-de-jaren"><i class="fa fa-check"></i><b>5.3.3</b> Verschillen tussen de jaren</a></li>
+<li class="chapter" data-level="5.3.4" data-path="5-h-gegevensanalyse.html"><a href="5-h-gegevensanalyse.html#gemiddelde-jaarlijkse-trend"><i class="fa fa-check"></i><b>5.3.4</b> Gemiddelde jaarlijkse trend</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html"><i class="fa fa-check"></i><b>6</b> Rapportage en communicatie</a><ul>
+<li class="chapter" data-level="6.1" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html#huidige-output"><i class="fa fa-check"></i><b>6.1</b> Huidige output</a><ul>
+<li class="chapter" data-level="6.1.1" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html#communicatie-naar-vrijwilligers-en-brede-publiek"><i class="fa fa-check"></i><b>6.1.1</b> Communicatie naar vrijwilligers en brede publiek</a></li>
+<li class="chapter" data-level="6.1.2" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html#driejaarlijkse-voortgangsrapportage"><i class="fa fa-check"></i><b>6.1.2</b> Driejaarlijkse voortgangsrapportage</a></li>
+<li class="chapter" data-level="6.1.3" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html#wetenschappelijke-output"><i class="fa fa-check"></i><b>6.1.3</b> Wetenschappelijke output</a></li>
+</ul></li>
+<li class="chapter" data-level="6.2" data-path="6-h-rapportage.html"><a href="6-h-rapportage.html#verdere-uitbouw-communicatie"><i class="fa fa-check"></i><b>6.2</b> Verdere uitbouw communicatie</a></li>
+</ul></li>
+<li class="appendix"><span><b>Bijlagen</b></span></li>
+<li class="chapter" data-level="A" data-path="A-h-bijlage.html"><a href="A-h-bijlage.html"><i class="fa fa-check"></i><b>A</b> Overzicht Europese en Vlaams prioritaire soorten</a></li>
+<li class="chapter" data-level="B" data-path="B-h-bijlageb.html"><a href="B-h-bijlageb.html"><i class="fa fa-check"></i><b>B</b> Overzicht tellingen van overige soorten</a></li>
+<li class="chapter" data-level="C" data-path="C-h-bijlagec.html"><a href="C-h-bijlagec.html"><i class="fa fa-check"></i><b>C</b> Technische beschrijving analysemodel libellen-gebiedstelling</a><ul>
+<li class="chapter" data-level="C.1" data-path="C-h-bijlagec.html"><a href="C-h-bijlagec.html#selectie-ruwe-data"><i class="fa fa-check"></i><b>C.1</b> Selectie ruwe data</a></li>
+<li class="chapter" data-level="C.2" data-path="C-h-bijlagec.html"><a href="C-h-bijlagec.html#herschaling-van-de-data"><i class="fa fa-check"></i><b>C.2</b> Herschaling van de data</a></li>
+<li class="chapter" data-level="C.3" data-path="C-h-bijlagec.html"><a href="C-h-bijlagec.html#model-voor-verschillen-tussen-de-jaren-1"><i class="fa fa-check"></i><b>C.3</b> Model voor verschillen tussen de jaren</a></li>
+<li class="chapter" data-level="C.4" data-path="C-h-bijlagec.html"><a href="C-h-bijlagec.html#model-voor-jaarlijkse-trend"><i class="fa fa-check"></i><b>C.4</b> Model voor jaarlijkse trend</a></li>
+</ul></li>
+<li class="chapter" data-level="" data-path="referenties.html"><a href="referenties.html"><i class="fa fa-check"></i>Referenties</a></li>
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Voortgangsrapport soortenmeetnetten</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="h:bijlagec" class="section level1">
+<h1><span class="header-section-number">C</span> Technische beschrijving analysemodel libellen-gebiedstelling</h1>
+<div id="selectie-ruwe-data" class="section level2">
+<h2><span class="header-section-number">C.1</span> Selectie ruwe data</h2>
+<p>We selecteren de tellingen van het meetnet Maanwaterjuffer, Kempense heidelibel en Gevlekte witsnuitlibel voor de periode 2016-2018. In principe worden de locaties van deze meetnetten jaarlijks geteld. Locaties waar de soort geen enkele keer werd waargenomen in deze periode, nemen we niet mee in de analyse. We selecteren ook enkel tellingen van locaties die in minstens twee (van de drie) jaren werden geteld.</p>
+</div>
+<div id="herschaling-van-de-data" class="section level2">
+<h2><span class="header-section-number">C.2</span> Herschaling van de data</h2>
+<p>Om tot een goede schatting van modelparameters te komen, moeten we het dagnummer in het jaar waarop de telling is uitgevoerd herschalen en centreren. Dit doen we op basis van het dagnummer dat in midden van de telperiode ligt (<span class="math inline">\(dagnr_{mid}\)</span>):
+<span class="math display">\[D = \frac{dagnr - dagnr_{mid}}{28}\]</span></p>
+</div>
+<div id="model-voor-verschillen-tussen-de-jaren-1" class="section level2">
+<h2><span class="header-section-number">C.3</span> Model voor verschillen tussen de jaren</h2>
+<p>We maken gebruik van een generalised linear mixed model (GLMM), waarbij we aannemen dat het getelde aantal <span class="math inline">\(C_{ldj}\)</span> op locatie <span class="math inline">\(l\)</span>, dag <span class="math inline">\(d\)</span> en jaar <span class="math inline">\(j\)</span> een negatief binomiale distributie volgt met gemiddelde <span class="math inline">\(\mu_{ldj}\)</span> en overdispersie parameter <span class="math inline">\(k\)</span>.</p>
+<p><span class="math display">\[C_{ldj} \sim {NB}(\mu_{ldj}, k)\]</span></p>
+<p><span class="math display">\[E(C_{ldj})=\mu_{ldj}\]</span>
+<span class="math display">\[var(C_{ldj})=\mu_{ldj}+\frac{\mu_{ldj}^2}{k}\]</span>
+We maken gebruik van onderstaande link functie.</p>
+<p><span class="math display">\[\log(\mu_{ldj}) = \eta_{ldj}\]</span>
+De verklarende variabelen zijn jaar (als categorische variabele) <span class="math inline">\(J_{j}\)</span>, het herschaalde dagnummer binnen een jaar <span class="math inline">\(D_{d}\)</span> en het kwadraat van het herschaalde dagnummer <span class="math inline">\(D_{d}^2\)</span>:</p>
+<p><span class="math display">\[\eta_{ldj}= \beta_{0} + \beta_{j}J_{j} + \beta_{1}D_{d} + \beta_{2}D_{d}^2 + b_{l}\]</span>
+<span class="math inline">\(b_{l}\)</span> is een random intercept voor locatie <span class="math inline">\(l\)</span>. Het volgt een normale distributie met gemiddelde 0 en variantie <span class="math inline">\(\sigma_{l}^2\)</span>:</p>
+<p><span class="math display">\[b_{l} \sim {N(0,\sigma_{l}^2)} \]</span></p>
+</div>
+<div id="model-voor-jaarlijkse-trend" class="section level2">
+<h2><span class="header-section-number">C.4</span> Model voor jaarlijkse trend</h2>
+<p>In dit model gebruiken we jaar als continue variabele <span class="math inline">\(J\)</span>. Verder is het model identiek aan het model voor verschillen tussen de jaren. We krijgen dus:</p>
+<p><span class="math display">\[\eta_{ldj}= \beta_{0} + \beta_{1}J + \beta_{2}D_{d} + \beta_{3}D_{d}^2 + b_{l}\]</span>
+waarbij <span class="math inline">\(e^{\beta_1}\)</span> de relatieve trend weergeeft.</p>
+
+</div>
+</div>
+            </section>
+        </div>
+      </div>
+    </div>
+<a href="B-h-bijlageb.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="referenties.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/lunr.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"google": false,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"all": ["facebook", "google", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": null,
+"text": null
+},
+"history": {
+"link": null,
+"text": null
+},
+"download": null,
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdn.bootcss.com/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:" && /^https?:/.test(src))
+      src = src.replace(/^https?:/, "");
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+
+</html>
