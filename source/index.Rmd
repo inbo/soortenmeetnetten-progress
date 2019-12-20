@@ -2,10 +2,8 @@
 title: "Voortgangsrapport soortenmeetnetten"
 author: 
   -
-    name: "Toon Westra, Frederic Piesschaert, Thierry Onkelinx en Hannes Ledegen"
+    name: "Toon Westra, Frederic Piesschaert, Thierry Onkelinx, Hannes Ledegen"
     email: "Toon.Westra@inbo.be"
-  -
-
 subtitle: "Een stand van zaken na drie jaar monitoring"
 reportnr: "Hier komt de DOI van het rapport"
 link-citations: TRUE
@@ -30,6 +28,20 @@ output:
   bookdown::epub_book:
     stylesheet: "css/inbo_rapport.css"
     template: !expr INBOmd::inbo_rapport_css("epub")
+header-includes:
+- \usepackage{booktabs}
+- \usepackage{longtable}
+- \usepackage{array}
+- \usepackage{multirow}
+- \usepackage{wrapfig}
+- \usepackage{float}
+- \usepackage{colortbl}
+- \usepackage{pdflscape}
+- \usepackage{tabu}
+- \usepackage{threeparttable}
+- \usepackage{threeparttablex}
+- \usepackage[normalem]{ulem}
+- \usepackage{makecell}
 ---
 
 

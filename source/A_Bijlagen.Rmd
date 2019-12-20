@@ -1,12 +1,14 @@
 
-# (APPENDIX) Bijlagen {-} 
+# (APPENDIX) Bijlagen {-}
 
 
-# Overzicht Europese en Vlaams prioritaire soorten {#h:bijlage}
+# Bijlage: overzicht Europese en Vlaams prioritaire soorten {#h:bijlage}
 
 Onderstaande tabel geeft een overzicht van de Europese en Vlaams prioritaire soorten (uitgezonder de vogels), de wijze waarop ze gemonitord worden en de status van de monitoring (indien een soort via een meetnet of een inhaalslag gemonitord wordt). Nieuwe soorten t.o.v. de blauwdrukken [@DeKnijf2014] worden in het vet aangeduid.
 
 ```{r, cache = FALSE}
+
+#`r ifelse(doc.type == "html", "# (APPENDIX) Bijlagen {-}", "\appendix")` 
 
 if(doc.type == "html"){
   
@@ -36,22 +38,29 @@ if(doc.type == "html"){
   
   soortenlijst %>%
   filter(`Type soort` %in% c("EPS", "VPS") & !is.na(`Type soort`)) %>%
-    # mutate(`Nederlandse naam` = cell_spec(`Nederlandse naam`), "latex", bold = `Nieuw t.o.v. blauwdruk` == 1) %>%
+    mutate(`Nederlandse naam` = cell_spec(`Nederlandse naam`, "latex",  bold = (`Nieuw t.o.v. blauwdruk` == 1),
+                                          color = ifelse(`Nieuw t.o.v. blauwdruk` == 1, inbo.hoofd, "black"))) %>%
   select(Soortgroep = soortgroep_databank, "Nederlandse naam", "Type soort", "Type monitoring", "Status meetnet/ inhaalslag") %>%
     mutate(`Status meetnet/ inhaalslag` = ifelse(is.na(`Status meetnet/ inhaalslag`), "", `Status meetnet/ inhaalslag`)) %>%
   arrange(Soortgroep, `Nederlandse naam`) %>%
-  kable(format = "pandoc") 
+  kable(longtable = TRUE, booktabs = TRUE, align = c("l","l", "c", "l", "l"), escape = FALSE) %>%
+    kable_styling(full_width = TRUE, 
+                  latex_options = c("repeat_header", "striped"),
+                  font_size = 8)%>%
+    row_spec(0, italic = FALSE, bold = TRUE) %>%
+    column_spec(2, width = "3cm") %>%
+    column_spec(5, width = "3cm")
   
 }
 
 
   
 ```
-* de wintertellingen van de vleermuizen door vrijwilligers is een lang lopend meetnet, maar gebeurt nog niet in samenwerking met INBO in kader van de soortenmeetnetten
+\* de wintertellingen van de vleermuizen door vrijwilligers is een lang lopend meetnet, maar gebeurt nog niet in samenwerking met INBO in kader van de soortenmeetnetten
 
-# Overzicht tellingen van overige soorten {#h:bijlageb}
+# Bijlage: overzicht tellingen van overige soorten {#h:bijlageb}
 
-In een deel van de soortenmeetnetten kunnen naast de doelsoort (de soort in functie waarvan het meetnet werd ontworpen), ook andere soorten binnen de soortgroep geteld worden en ingevoerd worden in [meetnetten.be](https://www.meetnetten.be). Onderstaande tabel geeft een overzicht van het aantal tellingen van deze overige soorten. Merk op dat er in deze tabel ook soorten voorkomen waarvoor een meetnet bestaat, maar het gaat dan steeds om tellingen die in een ander meetnet werden uitgevoerd. Zo worden er bijvoorbeeld Kamsalamanderlarven geteld in het Boomkikker meetnet.   
+In een deel van de soortenmeetnetten kunnen naast de doelsoort (de soort in functie waarvan het meetnet werd ontworpen), ook andere soorten binnen de soortgroep geteld worden en ingevoerd worden in [meetnetten.be](https://www.meetnetten.be). Onderstaande tabel geeft een overzicht van het aantal tellingen van deze overige soorten. Merk op dat er in deze tabel ook soorten voorkomen waarvoor een meetnet bestaat, maar het gaat dan steeds om tellingen die in een ander meetnet werden uitgevoerd. Zo kunnen er bijvoorbeeld larven van de Kamsalamander geteld worden in het Boomkikker meetnet.   
 
 ```{r}
 
@@ -61,10 +70,14 @@ begeleidende_soorten <- aantallen %>%
   summarise(n_telling = n_distinct(visit_id)) %>%
   ungroup()
 
+if(doc.type == "html"){
+  begeleidende_soorten <- begeleidende_soorten %>%
+  mutate(soort_wet = str_c("<em>", soort_wet, "</em>"))
+}
+
 begeleidende_soorten_tabel <- begeleidende_soorten %>%
   arrange(soortgroep, desc(n_telling)) %>%
-  mutate(soort_wet = str_c("<em>", soort_wet, "</em>"),
-         soortgroep = factor(soortgroep),
+  mutate(soortgroep = factor(soortgroep),
          soort_nl = factor(soort_nl)) %>%
   rename("Soortgroep" = soortgroep, "Nederlandse naam" = soort_nl, "Wetenschappelijke naam" = soort_wet, "Aantal tellingen" = n_telling)
 
@@ -96,7 +109,15 @@ if(doc.type == "html") {
   options(knitr.kable.NA = '')
   
   begeleidende_soorten_tabel %>%
-    kable(format = "pandoc")
+    kable(longtable = TRUE, booktabs = TRUE, align = c("l","l", "l", "c")) %>%
+      kable_styling(full_width = TRUE, 
+                  latex_options = c("repeat_header", "striped"),
+                  font_size = 8) %>%
+    column_spec(3, italic = TRUE) %>%
+    row_spec(0, italic = FALSE, bold = TRUE)
+    
+  
+    
 }
 
 
@@ -108,7 +129,7 @@ if(doc.type == "html") {
 
 
 
-# Technische beschrijving analysemodel libellen-gebiedstelling {#h:bijlagec}
+# Bijlage: technische beschrijving analysemodel libellen-gebiedstelling {#h:bijlagec}
 
 ## Selectie ruwe data
 

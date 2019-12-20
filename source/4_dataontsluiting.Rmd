@@ -3,7 +3,7 @@
 Figuur \@ref(fig:dataflow) stelt de datastromen van de soortenmeetnetten schematisch voor. We bespreken de verschillende onderdelen hiervan.
 
 ```{r dataflow, fig.cap= "Schematische voorstellingen van de datastromen", fig.width= 9}
-include_graphics("../images/Meetnetten_dataflow.jpg", dpi = NA)
+include_graphics("../docs/images/Meetnetten_dataflow.jpg", dpi = NA)
 ```
 
 

@@ -44,8 +44,9 @@ if(doc.type == "html"){
 
 ```
 
+
 ```{r opstartfig-dummy, fig.cap= "Overzicht van de opgestarte meetnetten en inhaalsagen in de periode 2016-2018"}
-include_graphics("../images/dummy_figuur.png")
+include_graphics("../docs/images/dummy_figuur.png")
 ```
 
 
@@ -112,6 +113,7 @@ Gemiddeld gezien voerde een teller `r mean_telling` tellingen uit in de periode 
 
 De aantallen voor 2019 tonen we niet in Figuur \@ref(fig:bezoekenfiguur) omdat nog niet alle bezoeken van dat jaar werden ingevoerd. We vermelden ook dat niet alle bezoeken in kader van de soortenmeetnetten geregistreerd worden in meetnetten.be. Dit is het geval voor de inhaalslag van de Das en de mollusken en deels ook voor de plantenmeetnetten. Daarnaast zijn er heel wat assisterende tellers, zoals bijvoorbeeld voor de eitellingen in het meetnet Gentiaanblauwtje. Deze assisterende tellers worden niet allemaal geregistreerd in [meetnetten.be](https://www.meetnetten.be).  
 
+\needspace{50mm}
 
 ## Kwantiteit en kwaliteit van de ingezamelde gegevens
 
@@ -169,6 +171,8 @@ voortgang_meetnetten_cyclus %>%
   labs(fill = "Doelbereik meetcyclus (%)", x = "Jaar", y = "Meetnet of inhaalslag")
 ```
 
+\needspace{200mm}
+
 Algemeen kunnen we de citizen science aanpak voor de soortenmonitoring via gestructureerde meetnetten als zeer succesvol beschouwen.  
 
 ```{r, warnings = FALSE}
@@ -191,14 +195,14 @@ bezochte_locaties_sf <- locaties %>%
 
 ```
 
+\needspace{200mm}
 
-Figuur \@ref(fig:telfig-dummy) geeft een overzicht van de locaties waarvoor tellingen werden ingevoerd in meetnetten.be over de verschillende jaren. Naast tellingen voor de meetnetlocaties, kunnen vrijwilligers ook tellingen invoeren voor extra locaties die niet strikt tot de meetnetten behoren. Dit is voornamelijk het geval bij de amfibieënmeetnetten. Deze gegevens kunnen gebruikt worden voor verspreidingsonderzoek of voor het berekenen van lokale trends. 
+Figuur \@ref(fig:`r ifelse(doc.type == "html", "telfig-dummy", "tellingen")`) geeft een overzicht van het aantal locaties waarvoor tellingen werden ingevoerd in meetnetten.be over de verschillende jaren. Naast tellingen voor de meetnetlocaties, kunnen vrijwilligers ook tellingen invoeren voor extra locaties die niet strikt tot de meetnetten behoren. Dit is voornamelijk het geval bij de amfibieënmeetnetten. Deze gegevens kunnen gebruikt worden voor verspreidingsonderzoek of voor het berekenen van lokale trends. 
 
-In de figuur zijn de punten random verschoven binnen een straal van 5 kilometer van de exacte ligging van de locaties en zijn de mogelijkheden om in te zoomen beperkt. Dit doen we om te voldoen aan het vervagingsbeleid dat wordt gehanteerd voor de data van de soortenmeetnetten.   
+`r ifelse(doc.type == "html", "De figuur toont ook de ligging van de getelde locaties. hierbij zijn de punten random verschoven binnen een straal van 5 kilometer van de exacte ligging van de locaties en zijn de mogelijkheden om in te zoomen beperkt. Dit doen we om te voldoen aan het vervagingsbeleid dat wordt gehanteerd voor de data van de soortenmeetnetten.", "In de [website versie](https://inbo.github.io/soortenmeetnetten_progress/) van het rapport kan ook de ligging van de meetpunten bekeken worden." )`
 
-```{r kaart}
+```{r kaart, eval = (doc.type == "html")}
 
-if(doc.type == "html") {
   
   locaties_shared <- SharedData$new(filter(bezochte_locaties_sf, jaar < 2019))
 
@@ -218,9 +222,17 @@ bscols(
       ) 
   )
 )
-} else {
+
+```
+
+```{r telfig-dummy, fig.cap= "Overzicht van de tellingen in de periode 2016-2018", eval = (doc.type == "html")}
+include_graphics("../docs/images/dummy_figuur.png")
+```
+
+
+```{r tellingen, eval = (doc.type != "html"), fig.cap= "Overzicht van de tellingen in de periode 2016-2018"}
   
-  provincies <- read_sf("../data/shape_file", "Provincies2015_WGS84")
+ # provincies <- read_sf("../data/shape_file", "Provincies2015_WGS84")
   
  bezochte_locaties_sf%>%
     filter(jaar < 2019) %>%
@@ -240,16 +252,11 @@ bscols(
   #       panel.grid = element_blank(),
   #       axis.text = element_blank(),
   #       axis.ticks = element_blank(),)
-  
-}
-
-
 
 ```
 
-```{r telfig-dummy, fig.cap= "Overzicht van de tellingen in de periode 2016-2018"}
-include_graphics("../images/dummy_figuur.png")
-```
+
+\needspace{800mm}
 
 ### Overige soorten
 

@@ -51,7 +51,8 @@ doy_year_loc_effect <- predict(model_nbinom_doy_iid_inlabru,
 
 ```
 
-```{r figmodel, warning=FALSE, fig.cap= "Visualisatie analysemodel voor Gevlekte witsnuitlibel"}
+
+```{r figmodel, warning=FALSE, fig.cap= "Visualisatie analysemodel voor Gevlekte witsnuitlibel", fig.height= 4, fig.width= 6}
 
 observed_counts <- analyseset_soort_bru %>%
   select(jaar, loc_id, y_obs = n_individuen, doy_scaled)
@@ -92,11 +93,11 @@ Om de lineaire trend te schatten gebruiken we jaar als continue variabele. Voor 
 Dit model gebruiken we voor volgende schattingen:
 
 * gemiddelde jaarlijkse lineaire trend (percentage vooruitgang of achteruitgang per jaar);
+
 * totale trend over de volledige periode (percentage vooruitgang of achteruitgang over de hele periode). 
 
 
-   
-## Interpretatie van trends/verschillen {#h:classtrend}
+## Interpretatie van trends of verschillen {#h:classtrend}
 
 Bij elke schatting van een verschil of trend hoort ook een 95%-betrouwbaarheidsinterval die de onzekerheid op de schatting weergeeft. Klassiek onderscheiden we op basis van het betrouwbaarheidsinterval: 
 
@@ -106,7 +107,7 @@ Bij elke schatting van een verschil of trend hoort ook een 95%-betrouwbaarheidsi
  
 Bovenstaande indeling is echter weinig informatief. Daarom stellen we een classificatiesysteem voor waarbij het betrouwbaarheidsinterval wordt vergeleken met een referentiewaarde, een onderste drempelwaarde en een bovenste drempelwaarde. Als referentiewaarde kiezen we 0 (= geen verandering). Voor de onderste drempelwaarde kiezen we een waarde die we als een sterke afname beschouwen: -25%. Op basis van de bovenste drempelwaarde onderscheiden we een sterke toename. Hiervoor kiezen de waarde +33%, wat overeenkomt met eenzelfde relatieve effect dan een afname van -25% (75/100 = 100/133). Dit classificatiesysteem resulteert in 10 klassen (Figuur \@ref(fig:figtrend)). In Tabel \@ref(tab:tabelklasse) geven we de codes en de beschrijving die bij de verschillende klassen horen. In figuren kunnen we de verschillende klassen visualiseren met de symbolen zoals getoond in Figuur \@ref(fig:figtrend). Deze symbolen zijn onafhankelijk van de richting van de trend, m.a.w. \++ (sterke toename) en \-- (sterke afname) worden met eenzelfde symbool weergegeven en aangeduid als \**.    
 
-```{r figtrend, fig.cap= "Classificatie van verschillen/trends", cache = FALSE}
+```{r figtrend, fig.cap= "Classificatie van trends of verschillen", cache = FALSE}
 
 trend_klasses <- data.frame(
   klasse_naam = c("onbekend", "mogelijke toename",
@@ -137,6 +138,11 @@ if(doc.type == "html") {
     mutate(klasse_tabel =  str_c("\\", as.character(klasse_tabel)))
   
 }
+  
+# } else {
+#   trend_klasses <- trend_klasses %>%
+#     mutate(klasse_tabel =  str_c("\\", as.character(klasse_tabel)))
+# }
 
 ggplot(trend_klasses, aes(x = klasse_naam, y = trend, ymin = lcl, ymax = ucl)) +
   geom_hline(yintercept = c(-0.25, 0.33, 0), linetype = c(3, 3, 2)) +
@@ -157,26 +163,27 @@ Ook de klassen 'mogelijke toename' en 'mogelijke afname' geven een meerwaarde. Z
 
 ```{r tabelklasse}
 
-if(doc.type == "docx"){
+if(doc.type == "html"){
 
- trend_klasses %>%
-  arrange(klasse) %>%
-  select("Code" = klasse_tabel, "Klasse" = klasse_naam, "Beschrijving" = klasse_beschrijving) %>%
-  kable(format = "pandoc",
-        align = c("c", "l", "l"),
-        caption = "Classificatie van verschillen/trends",
-        booktabs = TRUE
-        )
-
-} else{
-
-  trend_klasses %>%
+   trend_klasses %>%
   arrange(klasse) %>%
   select("Code" = klasse_tabel, "Klasse" = klasse_naam, "Beschrijving" = klasse_beschrijving) %>%
   kable(align = c("c", "l", "l"),
-        caption = "Classificatie van trends",
+        caption = "Classificatie van trends of verschillen",
         booktabs = TRUE) %>%
-    kable_styling()
+    kable_styling() %>%
+  column_spec(3, width = "8cm")
+  
+} else{
+  
+    trend_klasses %>%
+  arrange(klasse) %>%
+  select("Code" = klasse_tabel, "Klasse" = klasse_naam, "Beschrijving" = klasse_beschrijving) %>%
+  kable(align = c("c", "l", "l"),
+        caption = "Classificatie van trends of verschillen",
+        booktabs = TRUE) %>%
+    kable_styling() %>%
+    column_spec(3, width = "7cm")
 
 }
 
@@ -231,7 +238,7 @@ overzicht_index_2016 %>%
 
 ### Verschillen tussen de jaren
 
-Ook andere jaren kunnen als referentiejaar gebruikt worden. Om alle combinaties te visualiseren stellen we Figuur \@ref(fig:indexcomb) voor met in de y-as het referentiejaar en in de x-as het jaar dat vergeleken wordt met het referentiejaar. De symbolen tonen het type verschillen tussen de jaren volgens het classificatiesysteem in Figuur  \@ref(fig:figtrend) en Tabel \@ref(tab:tabelklasse). Een gearceerde driehoek (**) kan dus zowel een sterke toename (++) als een sterke afname (--) betekenen. De kleur geeft de richting en de grootte van de verandering aan. We zien bijvoorbeeld voor de Gevlekte witsnuitlibel in 2018 een sterke toename t.o.v. 2017. Dit wordt weergegeven via een blauw gearceerde driehoek. Als we 2017 vergelijken t.o.v. 2018 als referentiejaar, dan krijgen we uiteraard hetzelfde resultaat maar dan in de andere richting (een oranje gearceerde driehoek).     
+Ook andere jaren kunnen als referentiejaar gebruikt worden. Om alle combinaties te visualiseren stellen we Figuur \@ref(fig:indexcomb) voor met in de y-as het referentiejaar en in de x-as het jaar dat vergeleken wordt met het referentiejaar. De symbolen tonen het type verschillen tussen de jaren volgens het classificatiesysteem in Figuur  \@ref(fig:figtrend) en Tabel \@ref(tab:tabelklasse). Een gearceerde driehoek (\**) kan dus zowel een sterke toename (\++) als een sterke afname (\--) betekenen. De kleur geeft de richting en de grootte van de verandering aan. We zien bijvoorbeeld voor de Gevlekte witsnuitlibel in 2018 een sterke toename t.o.v. 2017. Dit wordt weergegeven via een blauw gearceerde driehoek. Als we 2017 vergelijken t.o.v. 2018 als referentiejaar, dan krijgen we uiteraard hetzelfde resultaat maar dan in de andere richting (een oranje gearceerde driehoek).     
 
 ```{r indexcomb, fig.width= 9, fig.height= 3, fig.cap = "Verschillen tussen de jaren voor Gevlekte witsnuitlibel, Kempense heidelibel en Maanwaterjuffer, met in de y-as het referentiejaar en in de y-as het jaar dat vergelijken wordt met het referentiejaar"}
 
@@ -255,6 +262,8 @@ overzicht_compare_years %>%
 ```
 
 
+\needspace{50mm}
+
 ### Gemiddelde jaarlijkse trend
 
 ```{r}
@@ -262,7 +271,7 @@ treshold_low <- round((exp(log(0.75)/2) - 1) *100, 1)
 treshold_high <- round((exp(log(1.33)/2) - 1) *100, 1)
 ```
 
-Figuur \@ref(fig:figtrend-resultaat) toont de gemiddelde jaarlijkse trend over de periode 2016-2018. Om het type trend te bepalen gebruiken we hier een jaarlijkse trend van  `r treshold_low`% als onderste  drempelwaarde en van `r treshold_high` % als bovenste drempelwaarde. Beide drempelwaarden komen overeen met eenzelfde relatief effect: (100 - `r treshold_low`)/100 = 100/(100 + `r treshold_high`). Over de volledige trendperiode (3 jaar) komt dit overeen met een respectievelijk een afname van -25% en een toename van +33%
+Figuur \@ref(fig:figtrend-resultaat) toont de gemiddelde jaarlijkse trend over de periode 2016-2018. Om het type trend te bepalen gebruiken we hier een jaarlijkse trend van  `r treshold_low`% als onderste  drempelwaarde en van `r treshold_high` % als bovenste drempelwaarde. Beide drempelwaarden komen overeen met eenzelfde relatief effect: (100 - `r abs(treshold_low)`)/100 = 100/(100 + `r treshold_high`). Over de volledige trendperiode (3 jaar) komt dit overeen met een respectievelijk een afname van -25% en een toename van +33%.
 
 ```{r figtrend-resultaat, fig.width = 6, fig.height= 3, fig.cap= "Gemiddelde jaarlijkse trend over de periode 2016-2018 voor Gevlekte witsnuitlibel, Kempense heidelibel en Maanwaterjuffer"}
 
@@ -288,7 +297,6 @@ overzicht_trend_tabel <- overzicht_trend %>%
   arrange(desc(trend)) %>%
   mutate(trend = round(trend, 0),
          klasse = classification(trend_lcl, trend_ucl, threshold = c(-25, 33), reference = 0),
-         klasse = str_c("\\", klasse),
          trend_lcl = round(trend_lcl, 0),
          trend_ucl = round(trend_ucl, 0),
          trend_tbl = str_c(ifelse(trend > 0, "+", ""),
@@ -299,9 +307,13 @@ overzicht_trend_tabel <- overzicht_trend %>%
                            trend_ucl, "%)")
          ) %>%
   select(soort, klasse, trend = trend_tbl, "type trend" = type_trend)
-# 
-# test <- 2
-# 
+
+if(doc.type == "html"){
+  overzicht_trend_tabel <- overzicht_trend_tabel %>%
+    mutate(klasse = str_c("\\", klasse))
+}
+
+
 if(doc.type == "docx"){
   
   overzicht_trend_tabel %>%
@@ -314,7 +326,7 @@ if(doc.type == "docx"){
   kable(align = c("l", "c", "c", "l"),
         caption = "Gemiddelde jaarlijkse trend over de periode 2016-2018 voor Gevlekte witsnuitlibel, Kempense heidelibel en Maanwaterjuffer",
        booktabs = TRUE)  %>%
-  kable_styling(full_width = FALSE)
+  kable_styling(full_width = FALSE, latex_options = "HOLD_position")
 
 }
 

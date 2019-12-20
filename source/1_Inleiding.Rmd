@@ -16,3 +16,5 @@ Voordat we de voortgang van de meetnetten bespreken, herhalen we in Hoofdstuk \@
 
 Naast de nieuw opgestarte meetnetten in de periode 2016-2018 zijn er ook meetnetten die al veel langer lopen, voornamelijk voor vogels (Algemene Broedvogelmonitoring Vlaanderen, Bijzondere Broedvogelmonitoring Vlaanderen, Watervogeltellingen) en vissen (Vismeetnet). Deze meetnetten bespreken we niet in dit rapport. Ook de resultaten van de gegevensanalyse bespreken we niet in dit rapport. Daarvoor voorzien we andere kanalen (zie Hoofdstuk \@ref(h:rapportage)).
 
+`r ifelse(doc.type != "html", "Dit rapport bevat enkele interactieve figuren die enkel kunnen bekeken worden op de [website versie](https://inbo.github.io/soortenmeetnetten_progress/) van dit rapport.", "")`
+
