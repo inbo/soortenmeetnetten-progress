@@ -208,10 +208,10 @@ Figuur \@ref(fig:`r ifelse(doc.type == "html", "telfig-dummy", "tellingen")`) ge
 
 bscols(
   list(
-    bscols(widths = c(4, 4, 4),
+    bscols(widths = c(6, 6),
            filter_checkbox("jaar", "Selecteer jaar", locaties_shared, ~Jaar, columns = 3),
-    filter_select("meetnet_tekst", "Selecteer meetnet", locaties_shared, ~meetnet_tekst, multiple = FALSE),
-    filter_checkbox("is_sample", "Selecteer type locatie", locaties_shared, ~ifelse(is_sample == 1, "Meetnetlocatie", "Extra locatie"))),
+    filter_select("meetnet_tekst", "Selecteer meetnet", locaties_shared, ~meetnet_tekst, multiple = FALSE)),
+    filter_checkbox("is_sample", "Selecteer type locatie", locaties_shared, ~ifelse(is_sample == 1, "Meetnetlocatie", "Extra locatie"), columns = 2),
     bscols(widths = c(7, 5),
     leaflet(locaties_shared, options = leafletOptions(maxZoom = 9)) %>%
       addTiles() %>%
