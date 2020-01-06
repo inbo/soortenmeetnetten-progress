@@ -5,7 +5,8 @@ author:
     name: "Toon Westra, Frederic Piesschaert, Thierry Onkelinx, Hannes Ledegen"
     email: "Toon.Westra@inbo.be"
 subtitle: "Een stand van zaken na drie jaar monitoring"
-reportnr: "Hier komt de DOI van het rapport"
+ordernr: "Rapporten van het Instituut voor Natuur- en Bosonderzoek 2019 (57)"
+reportnr: "doi.org/10.21436/inbor.17506104"
 link-citations: TRUE
 always_allow_html: yes
 bibliography: references.bib
